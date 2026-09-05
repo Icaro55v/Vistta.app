@@ -105,17 +105,44 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Autenticação e Perfis
   useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
+    let unsubscribeProfile: (() => void) | undefined;
+    let profileTimeout: ReturnType<typeof setTimeout> | undefined;
+
+    const clearProfileListener = () => {
+      unsubscribeProfile?.();
+      unsubscribeProfile = undefined;
+      if (profileTimeout) clearTimeout(profileTimeout);
+      profileTimeout = undefined;
+    };
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
+      clearProfileListener();
       if (u) {
-        onValue(ref(db, `users/${u.uid}`), (snap) => {
-          const data = snap.val();
-          if (data?.empresaId) {
-            setEmpresaId(data.empresaId);
-            setUserRole(data.role || 'vendedor');
-          }
+        profileTimeout = setTimeout(() => {
+          console.error('Tempo excedido ao carregar o perfil do usuário.');
           setUser(u);
           setLoadingAuth(false);
-        });
+        }, 10000);
+
+        unsubscribeProfile = onValue(
+          ref(db, `users/${u.uid}`),
+          (snap) => {
+            const data = snap.val();
+            setEmpresaId(data?.empresaId || null);
+            setUserRole(data?.role || null);
+            setUser(u);
+            setLoadingAuth(false);
+            clearProfileListener();
+          },
+          (error) => {
+            console.error('Não foi possível carregar o perfil do usuário:', error);
+            setEmpresaId(null);
+            setUserRole(null);
+            setUser(u);
+            setLoadingAuth(false);
+            clearProfileListener();
+          }
+        );
       } else {
         setUser(null);
         setEmpresaId(null);
@@ -123,6 +150,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setLoadingAuth(false);
       }
     });
+
+    return () => {
+      clearProfileListener();
+      unsubscribeAuth();
+    };
   }, []);
 
   // Listeners das Coleções no Banco de Dados
