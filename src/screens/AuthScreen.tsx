@@ -30,7 +30,8 @@ export function AuthScreen() {
 
           await update(ref(db, `empresas/${novaEmpresaId}/info`), {
             nome: authNomeOtica || 'Minha Ótica',
-            criadoEm: new Date().toISOString()
+            criadoEm: new Date().toISOString(),
+            criadoPor: userCred.user.uid
           });
 
           await update(ref(db, `users/${userCred.user.uid}`), {
@@ -65,7 +66,8 @@ export function AuthScreen() {
 
          await update(ref(db, `empresas/${novaEmpresaId}/info`), {
            nome: result.user.displayName ? `Ótica de ${result.user.displayName}` : 'Minha Ótica',
-           criadoEm: new Date().toISOString()
+           criadoEm: new Date().toISOString(),
+           criadoPor: result.user.uid
          });
 
          await update(ref(db, `users/${result.user.uid}`), {
