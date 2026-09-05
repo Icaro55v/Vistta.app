@@ -4,7 +4,7 @@ import { useAppContext, formatMoney } from '../context/AppContext';
 import { Cliente } from '../types';
 
 export function OrcamentosScreen() {
-  const { orcamentos, clientes, setActiveTab } = useAppContext();
+  const { orcamentos, clientes, setActiveTab, converterOrcamentoParaOs } = useAppContext();
   
   return (
     <div className="flex flex-col h-full">
@@ -39,7 +39,7 @@ export function OrcamentosScreen() {
                   <td className="py-4 px-6 text-[14px] font-medium text-slate-600">{o.itens?.length || 0} produto(s)</td>
                   <td className="py-4 px-6 text-right font-extrabold text-[15px] text-[#4A3AFF]">{formatMoney(o.total)}</td>
                   <td className="py-4 px-6 text-center">
-                    <button className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                    <div className="flex gap-2"><button onClick={() => converterOrcamentoParaOs(o).then(() => setActiveTab('ordens')).catch((error: any) => alert(error.message))} className="px-3 py-2 rounded-xl text-xs font-bold text-[#4A3AFF] hover:bg-indigo-50">Converter em OS</button><button className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button></div>
                   </td>
                 </tr>
               ))}

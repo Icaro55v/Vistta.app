@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export function FormProduto({ data, onSave, onClose }: any) {
+export function FormProduto({ data, onSave, onClose, fornecedores = [] }: any) {
   const [form, setForm] = useState(data || {
     codigo: '', categoria: 'Armações', marca: '', modelo: '', cor: '', tamanho: '', material: '', fornecedorId: '', tratamento: '',
     custo: '', venda: '', qtd: '', min: ''
@@ -25,7 +25,7 @@ export function FormProduto({ data, onSave, onClose }: any) {
         <div><label className={labelClass}>Cor</label><input value={form.cor} onChange={e=>h('cor', e.target.value)} className={inputClass} /></div>
         <div><label className={labelClass}>Tamanho</label><input value={form.tamanho} onChange={e=>h('tamanho', e.target.value)} className={inputClass} placeholder="Ex: 54-18" /></div>
         <div><label className={labelClass}>Material</label><input value={form.material} onChange={e=>h('material', e.target.value)} className={inputClass} /></div>
-        <div><label className={labelClass}>Fornecedor (ID)</label><input value={form.fornecedorId} onChange={e=>h('fornecedorId', e.target.value)} className={inputClass} /></div>
+        <div><label className={labelClass}>Fornecedor</label><select value={form.fornecedorId} onChange={e=>h('fornecedorId', e.target.value)} className={inputClass}><option value="">Sem fornecedor</option>{fornecedores.map((fornecedor: any) => <option key={fornecedor.id} value={fornecedor.id}>{fornecedor.nomeFantasia || fornecedor.razaoSocial || fornecedor.nome}</option>)}</select></div>
         <div className="sm:col-span-3"><label className={labelClass}>Tratamento / Especificação</label><input value={form.tratamento} onChange={e=>h('tratamento', e.target.value)} className={inputClass} placeholder="Antirreflexo, Transitions, multifocal..." /></div>
 
         <div className="sm:col-span-3 border-t border-slate-100 dark:border-slate-700 my-2"></div>

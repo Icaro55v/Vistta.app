@@ -6,7 +6,7 @@ import { ModalBase } from '../components/SharedUI';
 import { FormProduto } from '../components/Forms/FormProduto';
 
 export function EstoqueScreen() {
-  const { produtos, salvarProduto, excluirProduto } = useAppContext();
+  const { produtos, fornecedores, salvarProduto, excluirProduto } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
   const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
   const [modalAberto, setModalAberto] = useState(false);
@@ -75,7 +75,7 @@ export function EstoqueScreen() {
         </div>
       </div>
       <ModalBase open={modalAberto} onClose={() => { setModalAberto(false); setProdutoEditando(null); }} title={produtoEditando ? 'Editar Produto' : 'Novo Produto'} width="max-w-3xl">
-        <FormProduto data={produtoEditando} onSave={salvar} onClose={() => { setModalAberto(false); setProdutoEditando(null); }} />
+        <FormProduto data={produtoEditando} fornecedores={fornecedores} onSave={salvar} onClose={() => { setModalAberto(false); setProdutoEditando(null); }} />
       </ModalBase>
     </div>
   );

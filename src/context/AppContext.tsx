@@ -36,6 +36,7 @@ interface AppContextType {
   salvarCadastro: (collection: string, data: Record<string, any>, id?: string) => Promise<void>;
   excluirCadastro: (collection: string, id: string) => Promise<void>;
   salvarOrdemServico: (data: Partial<OrdemServico>, id?: string) => Promise<void>;
+  converterOrcamentoParaOs: (orcamento: Orcamento) => Promise<void>;
   registrarLancamentoCaixa: (data: { tipo: 'entrada' | 'saida' | 'sangria'; descricao: string; valor: number }) => Promise<void>;
   caixaAberto: Caixa | undefined;
   totalVendasCaixa: number;
@@ -247,6 +248,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const salvarCadastro = (collection: string, data: Record<string, any>, id?: string) => saveRecord(collection, data, id);
   const excluirCadastro = (collection: string, id: string) => deleteRecord(collection, id);
   const salvarOrdemServico = (data: Partial<OrdemServico>, id?: string) => saveRecord('ordensServico', data, id);
+  const converterOrcamentoParaOs = async (orcamento: Orcamento) => {
+    await salvarOrdemServico({
+      clienteId: orcamento.cliId,
+      orcamentoId: orcamento.id,
+      itens: orcamento.itens.map(item => ({ produtoId: item.id, descricao: `${item.marca} ${item.modelo}`.trim(), qtd: item.qtd, valor: Number(item.venda) || 0, tratamento: '' })),
+      status: 'aguardando_montagem',
+      criadoEm: new Date().toISOString(),
+      atualizadoEm: new Date().toISOString()
+    });
+    await update(ref(db, `empresas/${requireEmpresa()}/orcamentos/${orcamento.id}`), { status: 'aprovado' });
+  };
 
   const registrarLancamentoCaixa = async (data: { tipo: 'entrada' | 'saida' | 'sangria'; descricao: string; valor: number }) => {
     const caixa = caixaAberto;
@@ -315,7 +327,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
-    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, salvarOrdemServico, registrarLancamentoCaixa,
+    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, salvarOrdemServico, converterOrcamentoParaOs, registrarLancamentoCaixa,
     addToCart, removeFromCart, finalizarVenda,
     caixaAberto, totalVendasCaixa, pdvCliente, setPdvCliente, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento
   };
