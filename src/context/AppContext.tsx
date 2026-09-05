@@ -233,11 +233,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const fecharCaixa = async () => {
     const caixa = caixaAberto;
     if (!caixa) throw new Error('Nenhum caixa aberto.');
+    const totalLancamentos = (caixa.lancamentos || []).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
     await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}`), {
       status: 'fechado',
       dataFechamento: new Date().toISOString(),
       totalVendas: totalVendasCaixa,
-      valorFinal: Number(caixa.valorInicial || 0) + totalVendasCaixa
+      valorFinal: Number(caixa.valorInicial || 0) + totalVendasCaixa + totalLancamentos
     });
   };
 

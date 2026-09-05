@@ -22,7 +22,7 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
   const data = getCollectionData();
 
   const configs: Record<string, any> = {
-    fornecedores: { defaultData: { razaoSocial: '', nomeFantasia: '', cnpj: '', inscricaoEstadual: '', telefone: '', email: '', contatoComercial: '', categoriaFornecimento: 'Armações', prazoEntrega: '', condicoesComerciais: '', parceriaAtiva: true }, fields: [
+    fornecedores: { defaultData: { razaoSocial: '', nomeFantasia: '', cnpj: '', inscricaoEstadual: '', telefone: '', email: '', contatoComercial: '', categoriaFornecimento: 'Armações', prazoEntrega: '', condicoesComerciais: '', parceriaAtiva: true, enderecoCep: '', enderecoLogradouro: '', enderecoNumero: '', enderecoComplemento: '', enderecoBairro: '', enderecoCidade: '', enderecoEstado: '' }, fields: [
       { name: 'razaoSocial', label: 'Razão Social', type: 'text', required: true },
       { name: 'nomeFantasia', label: 'Nome Fantasia', type: 'text' },
       { name: 'cnpj', label: 'CNPJ', type: 'text' },
@@ -33,7 +33,13 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
       { name: 'categoriaFornecimento', label: 'Categoria de Fornecimento', type: 'select', options: [{ val: 'Armações', label: 'Armações' }, { val: 'Lentes de Contato', label: 'Lentes de Contato' }, { val: 'Lentes Oftálmicas', label: 'Lentes Oftálmicas' }, { val: 'Insumos/Laboratório', label: 'Insumos/Laboratório' }] },
       { name: 'prazoEntrega', label: 'Prazo padrão (dias)', type: 'number' },
       { name: 'condicoesComerciais', label: 'Condições Comerciais', type: 'text' },
-      { name: 'endereco', label: 'Endereço completo', type: 'text' }
+      { name: 'enderecoCep', label: 'CEP', type: 'text' },
+      { name: 'enderecoLogradouro', label: 'Logradouro', type: 'text' },
+      { name: 'enderecoNumero', label: 'Número', type: 'text' },
+      { name: 'enderecoComplemento', label: 'Complemento', type: 'text' },
+      { name: 'enderecoBairro', label: 'Bairro', type: 'text' },
+      { name: 'enderecoCidade', label: 'Cidade', type: 'text' },
+      { name: 'enderecoEstado', label: 'UF', type: 'text' }
     ] },
     contas: { defaultData: { descricao: '', tipo: 'pagar', valor: '', vencimento: '', fornecedorId: '', formaPagamento: 'PIX', status: 'pendente' }, fields: [
       { name: 'descricao', label: 'Descrição', type: 'text', required: true },
@@ -92,7 +98,7 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
                     <div className="text-[12px] text-slate-400 mt-0.5">{item.cnpj || item.email || item.nomeFantasia || (item.vencimento ? `Venc: ${new Date(item.vencimento).toLocaleDateString('pt-BR')}` : '')}</div>
                     </td>
                     <td className="py-4 px-6 text-[14px] font-medium text-slate-600">
-                    {item.valor ? <span className={`font-extrabold ${item.tipo==='pagar'?'text-rose-500':'text-emerald-500'}`}>{formatMoney(item.valor)}</span> : (item.contato || item.telefone || item.categoriaFornecimento || item.perfil || item.descricao || '-')}
+                    {item.valor ? <span className={`font-extrabold ${item.tipo==='pagar'?'text-rose-500':'text-emerald-500'}`}>{formatMoney(item.valor)}</span> : (item.contato || item.telefone || item.categoriaFornecimento || item.perfil || item.descricao || '-')}{activeTab === 'fornecedores' && <span className="block text-[11px] text-slate-400 mt-1">{contas.filter((conta: any) => conta.fornecedorId === item.id).length} compra(s) vinculada(s)</span>}
                     </td>
                     <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">
