@@ -15,7 +15,7 @@ import { OrdensServicoScreen } from './screens/OrdensServicoScreen';
 import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun } from 'lucide-react';
 
 function MainLayout() {
-  const { activeTab, user, loadingAuth, setActiveTab, carrinho, userRole, dadosEmpresa } = useAppContext();
+  const { activeTab, user, loadingAuth, setActiveTab, carrinho, userRole, dadosEmpresa, empresaId, databaseError } = useAppContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -46,11 +46,18 @@ function MainLayout() {
     return <AuthScreen />;
   }
 
+  if (!empresaId) {
+    return <div className="flex h-screen w-full items-center justify-center bg-slate-50 dark:bg-slate-900 p-6 text-center">
+      <div className="max-w-md"><h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Perfil da empresa não configurado</h2><p className="text-slate-500 mb-6">Sua conta foi autenticada, mas ainda não está vinculada a uma ótica. Saia e entre novamente ou tente recarregar.</p><button onClick={() => window.location.reload()} className="px-5 py-3 rounded-xl bg-[#4A3AFF] text-white font-bold">Tentar novamente</button></div>
+    </div>;
+  }
+
   // Renderiza o Sistema com o Menu Lateral
   return (
     <div className="flex h-screen w-full bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white overflow-hidden">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative pb-[70px] md:pb-0">
+        {databaseError && <div className="absolute top-0 left-0 right-0 z-50 bg-rose-600 text-white px-4 py-2 text-center text-sm font-semibold">{databaseError}</div>}
         <button onClick={toggleTheme} className="absolute top-4 right-4 z-40 w-10 h-10 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-500 hover:text-[#4A3AFF] shadow-sm" title="Alternar tema">
           {isDark ? <Sun size={18} /> : <Moon size={18} />}
         </button>

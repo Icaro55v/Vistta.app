@@ -12,6 +12,7 @@ interface AppContextType {
   userRole: string | null;
   empresaId: string | null;
   dadosEmpresa: { nome?: string } | null;
+  databaseError: string | null;
   produtos: Produto[];
   clientes: Cliente[];
   vendas: Venda[];
@@ -65,6 +66,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   const [dadosEmpresa, setDadosEmpresa] = useState<{ nome?: string } | null>(null);
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [pdvSearch, setPdvSearch] = useState('');
@@ -90,6 +92,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const totalVendasCaixa = useMemo(() => vendasDoCaixa.reduce((acc, v) => acc + (v.total || 0), 0), [vendasDoCaixa]);
 
   const requireEmpresa = () => {
+    if (!user) throw new Error('Usuário não autenticado. Entre novamente.');
     if (!empresaId) throw new Error('Empresa não identificada.');
     return empresaId;
   };
@@ -125,6 +128,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeAuth = onAuthStateChanged(auth, (u) => {
       clearProfileListener();
       if (u) {
+        setDatabaseError(null);
         profileTimeout = setTimeout(() => {
           console.error('Tempo excedido ao carregar o perfil do usuário.');
           setUser(u);
@@ -162,6 +166,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setEmpresaId(null);
         setUserRole(null);
         setDadosEmpresa(null);
+        setDatabaseError(null);
         setLoadingAuth(false);
       }
     });
@@ -193,11 +198,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { name: 'caixas', setter: setCaixas, queryRef: query(ref(db, `${basePath}/caixas`), limitToLast(100)) }
     ];
 
+    setDatabaseError(null);
     const unsubs = collections.map(col => {
       return onValue(col.queryRef, (snapshot) => {
         const data: any[] = [];
         snapshot.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
         col.setter(data);
+      }, (error) => {
+        console.error(`Erro ao carregar ${col.name}:`, error);
+        setDatabaseError(`Não foi possível carregar ${col.name}. Verifique as regras do Firebase.`);
       });
     });
 
@@ -324,7 +333,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = {
-    user, loadingAuth, userRole, empresaId, dadosEmpresa,
+    user, loadingAuth, userRole, empresaId, dadosEmpresa, databaseError,
     produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
