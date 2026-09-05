@@ -5,13 +5,20 @@ export function FormProduto({ data, onSave, onClose, fornecedores = [] }: any) {
     codigo: '', categoria: 'Armações', marca: '', modelo: '', cor: '', tamanho: '', material: '', fornecedorId: '', tratamento: '',
     custo: '', venda: '', qtd: '', min: ''
   });
+  const [submitError, setSubmitError] = useState('');
 
   const h = (f: string, v: any) => setForm((p: any) => ({ ...p, [f]: v }));
   const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-[#4A3AFF] transition-all text-slate-900 dark:text-white";
   const labelClass = "text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2 block";
 
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError('');
+    try { await onSave(form); } catch (error: any) { setSubmitError(error?.message || 'Não foi possível salvar o produto.'); }
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave(form); }}>
+    <form onSubmit={submit}>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div><label className={labelClass}>SKU (Cód)</label><input required value={form.codigo} onChange={e=>h('codigo', e.target.value)} className={inputClass} /></div>
         <div className="sm:col-span-2">
@@ -35,6 +42,7 @@ export function FormProduto({ data, onSave, onClose, fornecedores = [] }: any) {
         <div><label className={labelClass}>Estoque Atual</label><input type="number" required value={form.qtd} onChange={e=>h('qtd', e.target.value)} className={inputClass} /></div>
         <div><label className="text-[12px] font-bold text-rose-500 uppercase tracking-wider mb-2 block">Estoque Mín.</label><input type="number" required value={form.min} onChange={e=>h('min', e.target.value)} className={`${inputClass} border-rose-200 dark:border-rose-800 focus:border-rose-500`} /></div>
       </div>
+      {submitError && <p className="mb-4 rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-600">{submitError}</p>}
       <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 sm:gap-4">
         <button type="button" onClick={onClose} className="px-6 py-3.5 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
         <button type="submit" className="px-8 py-3.5 rounded-xl font-bold bg-[#4A3AFF] text-white">Salvar Produto</button>

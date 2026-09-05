@@ -5,6 +5,11 @@ import { db, auth } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
 
 export const formatMoney = (v: number | string) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export const toList = <T,>(value: T[] | Record<string, T> | null | undefined): T[] => {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === 'object') return Object.values(value);
+  return [];
+};
 
 interface AppContextType {
   user: User | null;
@@ -144,6 +149,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             if (data?.empresaId) {
               get(ref(db, `empresas/${data.empresaId}/info`)).then((snap) => {
                 setDadosEmpresa(snap.exists() ? snap.val() : null);
+              }).catch((error) => {
+                console.error('Não foi possível carregar os dados da empresa:', error);
+                setDatabaseError('Não foi possível carregar os dados da empresa.');
               });
             } else {
               setDadosEmpresa(null);
@@ -202,7 +210,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const unsubs = collections.map(col => {
       return onValue(col.queryRef, (snapshot) => {
         const data: any[] = [];
-        snapshot.forEach((child) => { data.push({ id: child.key, ...child.val() }); });
+        snapshot.forEach((child) => {
+          const value = child.val();
+          const record = value && typeof value === 'object' ? { id: child.key, ...value } : { id: child.key, value };
+          if (col.name === 'caixas') record.lancamentos = toList(record.lancamentos);
+          data.push(record);
+        });
         col.setter(data);
       }, (error) => {
         console.error(`Erro ao carregar ${col.name}:`, error);
@@ -242,7 +255,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const fecharCaixa = async () => {
     const caixa = caixaAberto;
     if (!caixa) throw new Error('Nenhum caixa aberto.');
-    const totalLancamentos = (caixa.lancamentos || []).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
+    const totalLancamentos = toList(caixa.lancamentos).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
     await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}`), {
       status: 'fechado',
       dataFechamento: new Date().toISOString(),
@@ -262,7 +275,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     await salvarOrdemServico({
       clienteId: orcamento.cliId,
       orcamentoId: orcamento.id,
-      itens: orcamento.itens.map(item => ({ produtoId: item.id, descricao: `${item.marca} ${item.modelo}`.trim(), qtd: item.qtd, valor: Number(item.venda) || 0, tratamento: '' })),
+      itens: toList(orcamento.itens).map(item => ({ produtoId: item.id, descricao: `${item.marca || ''} ${item.modelo || ''}`.trim(), qtd: Number(item.qtd) || 1, valor: Number(item.venda) || 0, tratamento: '' })),
       status: 'aguardando_montagem',
       criadoEm: new Date().toISOString(),
       atualizadoEm: new Date().toISOString()

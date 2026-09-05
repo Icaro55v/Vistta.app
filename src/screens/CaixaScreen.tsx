@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Lock, Wallet, PlusCircle } from 'lucide-react';
-import { useAppContext, formatMoney } from '../context/AppContext';
+import { useAppContext, formatMoney, toList } from '../context/AppContext';
 import { Caixa } from '../types';
 
 export function CaixaScreen() {
@@ -19,7 +19,7 @@ export function CaixaScreen() {
       setProcessando(false);
     }
   };
-  const totalLancamentos = (caixaAberto?.lancamentos || []).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
+  const totalLancamentos = toList(caixaAberto?.lancamentos).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
   
   return (
     <div className="flex flex-col h-full">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, PackageOpen, ArrowRightLeft } from 'lucide-react';
-import { useAppContext, formatMoney } from '../context/AppContext';
+import { useAppContext, formatMoney, toList } from '../context/AppContext';
 import { DashCard } from '../components/SharedUI';
 import { Venda, Cliente } from '../types';
 
@@ -10,7 +10,7 @@ export function FinanceiroScreen() {
   const contasReceber = contas.filter((conta: any) => conta.tipo === 'receber');
   const totalPagar = contasPagar.reduce((total: number, conta: any) => total + Number(conta.valor || 0), 0);
   const totalReceber = contasReceber.reduce((total: number, conta: any) => total + Number(conta.valor || 0), 0);
-  const totalSaidasCaixa = caixas.reduce((total: number, caixa: any) => total + (caixa.lancamentos || []).filter((item: any) => item.tipo !== 'entrada').reduce((subtotal: number, item: any) => subtotal + Number(item.valor || 0), 0), 0);
+  const totalSaidasCaixa = caixas.reduce((total: number, caixa: any) => total + toList(caixa.lancamentos).filter((item: any) => item.tipo !== 'entrada').reduce((subtotal: number, item: any) => subtotal + Number(item.valor || 0), 0), 0);
   
   return (
     <div className="flex flex-col h-full">

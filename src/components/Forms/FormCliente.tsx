@@ -13,6 +13,7 @@ export function FormCliente({ data, onSave, onClose }: FormClienteProps) {
   const receitaVazia = (): Prescricao => ({ medico: '', crm: '', dataReceita: '', obs: '', od: medidaVazia(), oe: medidaVazia(), longe: { od: medidaVazia(), oe: medidaVazia() }, perto: { od: medidaVazia(), oe: medidaVazia() } });
   const clienteVazio = () => ({ nome: '', cpf: '', tel: '', nasc: '', email: '', endereco: { cep: '', logradouro: '', numero: '', complemento: '', bairro: '', cidade: '', estado: '' }, prescricao: receitaVazia() });
   const [form, setForm] = useState<any>(clienteVazio());
+  const [submitError, setSubmitError] = useState('');
 
   useEffect(() => {
     if (data) {
@@ -29,8 +30,14 @@ export function FormCliente({ data, onSave, onClose }: FormClienteProps) {
   const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-[14px] outline-none focus:border-[#4A3AFF]";
   const labelClass = "text-[12px] font-bold text-slate-500 uppercase mb-2 block";
 
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitError('');
+    try { await onSave(form); } catch (error: any) { setSubmitError(error?.message || 'Não foi possível salvar o cliente.'); }
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave(form); }} className="flex flex-col">
+    <form onSubmit={submit} className="flex flex-col">
       <div className="space-y-6">
         <div>
           <h3 className="text-[13px] font-bold text-indigo-500 uppercase mb-4 flex items-center gap-2"><Users size={16}/> Dados Pessoais</h3>
@@ -61,6 +68,7 @@ export function FormCliente({ data, onSave, onClose }: FormClienteProps) {
            {(['longe', 'perto'] as const).map(group => <div key={group} className="mb-5 overflow-x-auto"><h4 className="font-bold text-slate-600 mb-2">{group === 'longe' ? 'Visão de Longe' : 'Visão de Perto'}</h4><div className="min-w-[650px] grid grid-cols-7 gap-2 text-center"><div className="text-left text-xs font-bold text-slate-400">Olho</div>{['Esférico','Cilíndrico','Eixo','DNP','Adição','Altura'].map(label => <div key={label} className="text-[10px] font-bold text-slate-400 uppercase">{label}</div>)}{(['od','oe'] as const).flatMap(eye => [<div key={`${group}-${eye}-label`} className="text-left font-bold text-[#4A3AFF] uppercase">{eye}</div>, ...(['esf','cil','eixo','dnp','add','altura'] as const).map(field => <input key={`${group}-${eye}-${field}`} value={form.prescricao[group][eye][field]} onChange={e=>handlePresc(group, eye, field, e.target.value)} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 rounded-xl px-2 py-2 text-center text-sm" placeholder="-" />)])}</div></div>)}
         </div>
       </div>
+      {submitError && <p className="mt-4 rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-600">{submitError}</p>}
       <div className="mt-8 border-t flex justify-end gap-3 pt-4">
         <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
         <button type="submit" className="px-8 py-3 rounded-xl font-bold bg-[#4A3AFF] text-white">Salvar Ficha</button>

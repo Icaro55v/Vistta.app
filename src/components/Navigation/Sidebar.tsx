@@ -62,7 +62,7 @@ export function Sidebar() {
             <div className="text-[10px] text-slate-500 font-bold uppercase">{userRole === 'admin' ? 'Administrador' : 'Vendedor'}</div>
           </div>
         </div>
-        <button onClick={() => signOut(auth)} className="text-slate-400 hover:text-rose-500" title="Sair"><LogOut size={18} /></button>
+        <button onClick={() => signOut(auth).catch((error) => console.error('Não foi possível sair:', error))} className="text-slate-400 hover:text-rose-500" title="Sair"><LogOut size={18} /></button>
       </div>
     </aside>
   );
