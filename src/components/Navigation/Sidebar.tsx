@@ -3,6 +3,8 @@ import { Home, Wallet, ShoppingCart, FileText, Boxes, Users, Tags, TrendingUp, A
 import { useAppContext } from '../../context/AppContext';
 import { LogoVistta } from '../SharedUI';
 import { Orcamento } from '../../types';
+import { signOut } from 'firebase/auth';
+import { auth } from '../../config/firebase';
 
 function SidebarItem({ icon: Icon, label, active, onClick, badge, badgeColor }: any) {
   return (
@@ -18,16 +20,16 @@ function SidebarCategory({ label }: { label: string }) {
 }
 
 export function Sidebar() {
-  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole } = useAppContext();
+  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole, dadosEmpresa, user } = useAppContext();
   
   return (
-    <aside className="hidden md:flex flex-col w-[270px] bg-white border-r border-slate-200 z-20 shadow-sm">
-      <div className="h-[80px] flex items-center px-6 border-b border-slate-100 flex-shrink-0">
+    <aside className="hidden md:flex flex-col w-[270px] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/50 z-20 shadow-sm">
+      <div className="h-[80px] flex items-center px-6 border-b border-slate-100 dark:border-slate-700/50 flex-shrink-0">
         <div className="w-10 h-10 rounded-xl bg-[#4A3AFF] text-white flex items-center justify-center mr-3"><LogoVistta className="w-7" solidWhite={true} /></div>
-        <span className="font-bold text-[18px] text-slate-900 truncate">Minha Ótica</span>
+        <span className="font-bold text-[18px] text-slate-900 dark:text-white truncate" title={dadosEmpresa?.nome}>{dadosEmpresa?.nome || 'Minha Ótica'}</span>
       </div>
       
-      <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
+      <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 custom-scrollbar">
         <SidebarItem icon={Home} label="Dashboard" active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
         
         <SidebarCategory label="Operação" />
@@ -38,6 +40,7 @@ export function Sidebar() {
         <SidebarCategory label="Cadastros" />
         <SidebarItem icon={Boxes} label="Estoque" active={activeTab === 'estoque'} onClick={() => setActiveTab('estoque')} />
         <SidebarItem icon={Users} label="Clientes" active={activeTab === 'clientes'} onClick={() => setActiveTab('clientes')} />
+        <SidebarItem icon={Tags} label="Categorias" active={activeTab === 'categorias'} onClick={() => setActiveTab('categorias')} />
         
         {userRole === 'admin' && (
           <>
@@ -47,6 +50,18 @@ export function Sidebar() {
             <SidebarItem icon={UserPlus} label="Usuários" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
           </>
         )}
+      </div>
+      <div className="p-4 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
+        <div className="flex items-center min-w-0">
+          <div className="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-[#4A3AFF] flex items-center justify-center font-bold mr-3">
+            {user?.email?.charAt(0).toUpperCase() || 'U'}
+          </div>
+          <div className="min-w-0">
+            <div className="text-sm font-bold truncate text-slate-900 dark:text-white">{user?.email?.split('@')[0] || 'Usuário'}</div>
+            <div className="text-[10px] text-slate-500 font-bold uppercase">{userRole === 'admin' ? 'Administrador' : 'Vendedor'}</div>
+          </div>
+        </div>
+        <button onClick={() => signOut(auth)} className="text-slate-400 hover:text-rose-500" title="Sair"><LogOut size={18} /></button>
       </div>
     </aside>
   );

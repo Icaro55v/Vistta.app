@@ -11,6 +11,7 @@ interface AppContextType {
   loadingAuth: boolean;
   userRole: string | null;
   empresaId: string | null;
+  dadosEmpresa: { nome?: string } | null;
   produtos: Produto[];
   clientes: Cliente[];
   vendas: Venda[];
@@ -59,6 +60,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [empresaId, setEmpresaId] = useState<string | null>(null);
+  const [dadosEmpresa, setDadosEmpresa] = useState<{ nome?: string } | null>(null);
   
   const [activeTab, setActiveTab] = useState('dashboard');
   const [pdvSearch, setPdvSearch] = useState('');
@@ -130,6 +132,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             const data = snap.val();
             setEmpresaId(data?.empresaId || null);
             setUserRole(data?.role || null);
+            if (data?.empresaId) {
+              get(ref(db, `empresas/${data.empresaId}/info`)).then((snap) => {
+                setDadosEmpresa(snap.exists() ? snap.val() : null);
+              });
+            } else {
+              setDadosEmpresa(null);
+            }
             setUser(u);
             setLoadingAuth(false);
             clearProfileListener();
@@ -147,6 +156,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setUser(null);
         setEmpresaId(null);
         setUserRole(null);
+        setDadosEmpresa(null);
         setLoadingAuth(false);
       }
     });
@@ -284,7 +294,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = {
-    user, loadingAuth, userRole, empresaId,
+    user, loadingAuth, userRole, empresaId, dadosEmpresa,
     produtos, clientes, vendas, caixas, orcamentos, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
