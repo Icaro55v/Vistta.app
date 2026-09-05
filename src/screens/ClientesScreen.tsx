@@ -1,11 +1,20 @@
 import React from 'react';
+import { ModalBase } from '../components/SharedUI';
+import { FormCliente } from '../components/Forms/FormCliente';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 import { Cliente } from '../types';
 
 export function ClientesScreen() {
-  const { clientes } = useAppContext(); 
-  // Exponha setModalCliente e handleDelete no AppContext se ainda não fez
+  const { clientes, salvarCliente, excluirCliente } = useAppContext();
+  const [clienteEditando, setClienteEditando] = React.useState<Cliente | null>(null);
+  const [modalAberto, setModalAberto] = React.useState(false);
+
+  const salvar = async (data: Partial<Cliente>) => {
+    await salvarCliente(data, clienteEditando?.id);
+    setModalAberto(false);
+    setClienteEditando(null);
+  };
   
   return (
     <div className="flex flex-col h-full">
@@ -14,7 +23,7 @@ export function ClientesScreen() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Clientes & Receitas</h1>
           <p className="text-slate-500">Gestão de contatos e prontuários óticos.</p>
         </div>
-        <button className="bg-[#4A3AFF] text-white px-6 py-3 rounded-xl font-semibold flex items-center shadow-md">
+        <button onClick={() => { setClienteEditando(null); setModalAberto(true); }} className="bg-[#4A3AFF] text-white px-6 py-3 rounded-xl font-semibold flex items-center shadow-md">
           <Plus size={20} className="mr-2" /> Novo Cliente
         </button>
       </div>
@@ -43,8 +52,8 @@ export function ClientesScreen() {
                   </td>
                   <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">
-                       <button className="p-2 rounded-xl text-slate-400 hover:text-[#4A3AFF] hover:bg-indigo-50"><Edit2 size={16} /></button>
-                       <button className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                       <button onClick={() => { setClienteEditando(c); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[#4A3AFF] hover:bg-indigo-50"><Edit2 size={16} /></button>
+                       <button onClick={() => excluirCliente(c.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                     </div>
                   </td>
                 </tr>
@@ -53,6 +62,9 @@ export function ClientesScreen() {
           </table>
         </div>
       </div>
+      <ModalBase open={modalAberto} onClose={() => { setModalAberto(false); setClienteEditando(null); }} title={clienteEditando ? 'Editar Cliente' : 'Novo Cliente'} width="max-w-4xl">
+        <FormCliente data={clienteEditando} onSave={salvar} onClose={() => { setModalAberto(false); setClienteEditando(null); }} />
+      </ModalBase>
     </div>
   );
 }

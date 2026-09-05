@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { ref, push, update, remove, onValue, query, limitToLast, runTransaction, get } from 'firebase/database';
+import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get } from 'firebase/database';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem } from '../types';
@@ -129,6 +129,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!empresaId) return;
     const basePath = `empresas/${empresaId}`;
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
     
     const collections = [
       { name: 'produtos', setter: setProdutos, queryRef: ref(db, `${basePath}/produtos`) },
@@ -138,7 +141,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { name: 'categorias', setter: setCategorias, queryRef: ref(db, `${basePath}/categorias`) },
       { name: 'usuarios', setter: setUsuarios, queryRef: ref(db, `${basePath}/usuarios`) },
       { name: 'orcamentos', setter: setOrcamentos, queryRef: ref(db, `${basePath}/orcamentos`) },
-      { name: 'vendas', setter: setVendas, queryRef: query(ref(db, `${basePath}/vendas`), limitToLast(500)) },
+      { name: 'vendas', setter: setVendas, queryRef: query(ref(db, `${basePath}/vendas`), orderByChild('data'), startAt(inicioMes.toISOString())) },
       { name: 'caixas', setter: setCaixas, queryRef: query(ref(db, `${basePath}/caixas`), limitToLast(100)) }
     ];
 

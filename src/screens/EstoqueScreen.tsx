@@ -2,10 +2,20 @@ import React, { useState } from 'react';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
 import { useAppContext, formatMoney } from '../context/AppContext';
 import { Produto } from '../types';
+import { ModalBase } from '../components/SharedUI';
+import { FormProduto } from '../components/Forms/FormProduto';
 
 export function EstoqueScreen() {
-  const { produtos } = useAppContext(); // Também puxe a função handleDelete e setModalProduto do contexto
+  const { produtos, salvarProduto, excluirProduto } = useAppContext();
   const [searchTerm, setSearchTerm] = useState('');
+  const [produtoEditando, setProdutoEditando] = useState<Produto | null>(null);
+  const [modalAberto, setModalAberto] = useState(false);
+
+  const salvar = async (data: Partial<Produto>) => {
+    await salvarProduto(data, produtoEditando?.id);
+    setModalAberto(false);
+    setProdutoEditando(null);
+  };
   
   return (
     <div className="flex flex-col h-full">
@@ -14,7 +24,7 @@ export function EstoqueScreen() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Estoque</h1>
           <p className="text-slate-500">Gerencie produtos e níveis de inventário.</p>
         </div>
-        <button className="bg-[#4A3AFF] text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+        <button onClick={() => { setProdutoEditando(null); setModalAberto(true); }} className="bg-[#4A3AFF] text-white px-6 py-3 rounded-xl font-semibold flex items-center">
           <Plus size={20} className="mr-2" /> Adicionar Produto
         </button>
       </div>
@@ -39,6 +49,7 @@ export function EstoqueScreen() {
                 <th className="py-4 px-6">Categoria</th>
                 <th className="py-4 px-6 text-right">Venda</th>
                 <th className="py-4 px-6 text-center w-28">Qtd</th>
+                <th className="py-4 px-6 text-center">Ações</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -53,12 +64,19 @@ export function EstoqueScreen() {
                   <td className="py-4 px-6 text-center">
                     <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-[14px] font-bold ${Number(p.qtd) < Number(p.min) ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-700'}`}>{p.qtd}</span>
                   </td>
+                  <td className="py-4 px-6 text-center">
+                    <button onClick={() => { setProdutoEditando(p); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[#4A3AFF] hover:bg-indigo-50"><Edit2 size={16} /></button>
+                    <button onClick={() => excluirProduto(p.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+      <ModalBase open={modalAberto} onClose={() => { setModalAberto(false); setProdutoEditando(null); }} title={produtoEditando ? 'Editar Produto' : 'Novo Produto'} width="max-w-3xl">
+        <FormProduto data={produtoEditando} onSave={salvar} onClose={() => { setModalAberto(false); setProdutoEditando(null); }} />
+      </ModalBase>
     </div>
   );
 }
