@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
 import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get } from 'firebase/database';
-import { onAuthStateChanged, User } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
 
@@ -19,6 +19,7 @@ interface AppContextType {
   dadosEmpresa: { nome?: string } | null;
   databaseError: string | null;
   configurarOtica: (nome: string) => Promise<void>;
+  logout: () => Promise<void>;
   produtos: Produto[];
   clientes: Cliente[];
   vendas: Venda[];
@@ -112,6 +113,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!empresaRef.key) throw new Error('Não foi possível criar a empresa.');
     await update(ref(db, `empresas/${empresaRef.key}/info`), { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid });
     await update(ref(db, `users/${user.uid}`), { empresaId: empresaRef.key, role: 'admin', email: user.email || '' });
+  };
+
+  const logout = async () => {
+    await signOut(auth);
+    setCarrinho([]);
+    setProdutos([]);
+    setClientes([]);
+    setVendas([]);
+    setCaixas([]);
+    setOrcamentos([]);
+    setOrdensServico([]);
+    setFornecedores([]);
+    setContas([]);
+    setCategorias([]);
+    setUsuarios([]);
+    setPdvCliente('');
+    setPdvDesconto(0);
   };
 
   const saveRecord = async (collection: string, data: Record<string, any>, id?: string) => {
@@ -358,7 +376,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = {
-    user, loadingAuth, userRole, empresaId, dadosEmpresa, databaseError, configurarOtica,
+    user, loadingAuth, userRole, empresaId, dadosEmpresa, databaseError, configurarOtica, logout,
     produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,

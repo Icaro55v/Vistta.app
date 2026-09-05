@@ -3,8 +3,6 @@ import { Home, Wallet, ShoppingCart, FileText, Boxes, Users, Tags, TrendingUp, A
 import { useAppContext } from '../../context/AppContext';
 import { LogoVistta } from '../SharedUI';
 import { Orcamento } from '../../types';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../config/firebase';
 
 function SidebarItem({ icon: Icon, label, active, onClick, badge, badgeColor }: any) {
   return (
@@ -20,7 +18,7 @@ function SidebarCategory({ label }: { label: string }) {
 }
 
 export function Sidebar() {
-  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole, dadosEmpresa, user } = useAppContext();
+  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole, dadosEmpresa, user, logout } = useAppContext();
   
   return (
     <aside className="hidden md:flex flex-col w-[270px] bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700/50 z-20 shadow-sm">
@@ -64,7 +62,7 @@ export function Sidebar() {
             <div className="text-[10px] text-slate-500 font-bold uppercase">{userRole === 'admin' ? 'Administrador' : 'Vendedor'}</div>
           </div>
         </div>
-        <button onClick={() => signOut(auth).catch((error) => console.error('Não foi possível sair:', error))} className="text-slate-400 hover:text-rose-500" title="Sair"><LogOut size={18} /></button>
+        <button onClick={() => logout().catch((error) => console.error('Não foi possível sair:', error))} className="text-slate-400 hover:text-rose-500" title="Sair"><LogOut size={18} /></button>
       </div>
     </aside>
   );

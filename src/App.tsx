@@ -14,10 +14,10 @@ import { CadastrosGenericosScreen } from './screens/CadastrosGenericosScreen';
 import { OrdensServicoScreen } from './screens/OrdensServicoScreen';
 import { HelpScreen } from './screens/HelpScreen';
 import { SetupOticaScreen } from './screens/SetupOticaScreen';
-import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun } from 'lucide-react';
+import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun, LogOut } from 'lucide-react';
 
 function MainLayout() {
-  const { activeTab, user, loadingAuth, setActiveTab, carrinho, userRole, dadosEmpresa, empresaId, databaseError } = useAppContext();
+  const { activeTab, user, loadingAuth, setActiveTab, carrinho, userRole, dadosEmpresa, empresaId, databaseError, logout } = useAppContext();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isDark, setIsDark] = useState(false);
 
@@ -95,6 +95,7 @@ function MainLayout() {
               ...(userRole === 'admin' ? [['financeiro', 'Financeiro'], ['contas', 'Contas'], ['fornecedores', 'Fornecedores'], ['usuarios', 'Usuários']] : [])
             ].map(([tab, label]) => <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }} className="w-full text-left px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700">{label}</button>)}
           </div>
+          <button onClick={() => logout().catch((error) => console.error('Não foi possível sair:', error))} className="mt-6 flex w-full items-center gap-3 border-t border-slate-100 px-4 pt-5 text-left font-bold text-rose-500 dark:border-slate-700"><LogOut size={18} /> Sair da conta</button>
         </div>
       </div>}
       </div>
