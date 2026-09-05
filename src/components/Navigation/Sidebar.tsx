@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, Wallet, ShoppingCart, FileText, Boxes, Users, Tags, TrendingUp, ArrowRightLeft, Truck, UserPlus, LogOut } from 'lucide-react';
+import { Home, Wallet, ShoppingCart, FileText, Boxes, Users, Tags, TrendingUp, ArrowRightLeft, Truck, UserPlus, LogOut, CircleHelp } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { LogoVistta } from '../SharedUI';
 import { Orcamento } from '../../types';
@@ -51,6 +51,8 @@ export function Sidebar() {
             <SidebarItem icon={UserPlus} label="Usuários" active={activeTab === 'usuarios'} onClick={() => setActiveTab('usuarios')} />
           </>
         )}
+        <SidebarCategory label="Suporte" />
+        <SidebarItem icon={CircleHelp} label="Ajuda e Treinamento" active={activeTab === 'ajuda'} onClick={() => setActiveTab('ajuda')} />
       </div>
       <div className="p-4 border-t border-slate-100 dark:border-slate-700/80 flex items-center justify-between">
         <div className="flex items-center min-w-0">
