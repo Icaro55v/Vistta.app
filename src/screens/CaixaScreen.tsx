@@ -65,9 +65,10 @@ export function CaixaScreen() {
            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-400 mb-5 shadow-sm border"><Lock size={24} /></div>
            <h3 className="text-2xl font-bold text-slate-800 mb-3">Caixa Fechado</h3>
            <p className="text-slate-500 mb-8 max-w-md">Nenhum caixa está aberto no momento. Abra o caixa para permitir novas vendas.</p>
-           <div className="flex items-center gap-3 mb-6">
+           <div className="flex flex-col sm:flex-row items-center gap-3 mb-6">
              <label htmlFor="valor-inicial" className="text-sm font-bold text-slate-600">Fundo inicial</label>
              <input id="valor-inicial" type="number" min="0" step="0.01" value={valorInicial} onChange={e => setValorInicial(e.target.value)} className="w-36 bg-white border border-slate-200 rounded-xl px-3 py-2 outline-none focus:border-[#4A3AFF]" />
+             <button disabled={processando} onClick={() => executar(() => abrirCaixa(Number(valorInicial.replace(',', '.'))))} className="bg-[#4A3AFF] text-white px-5 py-2.5 rounded-xl font-bold disabled:opacity-60">{processando ? 'Abrindo...' : 'Abrir Caixa'}</button>
            </div>
         </div>
       )}
