@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { ref, push, update, onValue, query, limitToLast, runTransaction } from 'firebase/database';
+import { ref, push, update, remove, onValue, query, limitToLast, runTransaction, get } from 'firebase/database';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem } from '../types';
@@ -23,6 +23,16 @@ interface AppContextType {
   carrinho: CarrinhoItem[];
   activeTab: string;
   setActiveTab: (tab: string) => void;
+  pdvSearch: string;
+  setPdvSearch: (value: string) => void;
+  abrirCaixa: (valorInicial: number) => Promise<void>;
+  fecharCaixa: () => Promise<void>;
+  salvarProduto: (data: Partial<Produto>, id?: string) => Promise<void>;
+  excluirProduto: (id: string) => Promise<void>;
+  salvarCliente: (data: Partial<Cliente>, id?: string) => Promise<void>;
+  excluirCliente: (id: string) => Promise<void>;
+  salvarCadastro: (collection: string, data: Record<string, any>, id?: string) => Promise<void>;
+  excluirCadastro: (collection: string, id: string) => Promise<void>;
   caixaAberto: Caixa | undefined;
   totalVendasCaixa: number;
   addToCart: (prod: Produto) => void;
@@ -51,6 +61,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [empresaId, setEmpresaId] = useState<string | null>(null);
   
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [pdvSearch, setPdvSearch] = useState('');
   const [carrinho, setCarrinho] = useState<CarrinhoItem[]>([]);
   
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -70,6 +81,27 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const caixaAberto = useMemo(() => caixas.find(c => c.status === 'aberto'), [caixas]);
   const vendasDoCaixa = useMemo(() => caixaAberto ? vendas.filter(v => v.caixaId === caixaAberto.id) : [], [vendas, caixaAberto]);
   const totalVendasCaixa = useMemo(() => vendasDoCaixa.reduce((acc, v) => acc + (v.total || 0), 0), [vendasDoCaixa]);
+
+  const requireEmpresa = () => {
+    if (!empresaId) throw new Error('Empresa não identificada.');
+    return empresaId;
+  };
+
+  const saveRecord = async (collection: string, data: Record<string, any>, id?: string) => {
+    const empresa = requireEmpresa();
+    const collectionPath = `empresas/${empresa}/${collection}`;
+    if (id) {
+      await update(ref(db, `${collectionPath}/${id}`), data);
+      return;
+    }
+    const recordRef = push(ref(db, collectionPath));
+    await update(ref(db, `${collectionPath}/${recordRef.key}`), data);
+  };
+
+  const deleteRecord = async (collection: string, id: string) => {
+    const empresa = requireEmpresa();
+    await remove(ref(db, `empresas/${empresa}/${collection}/${id}`));
+  };
 
   // Autenticação e Perfis
   useEffect(() => {
@@ -136,13 +168,42 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const removeFromCart = (id: string) => setCarrinho(prev => prev.filter(c => c.id !== id));
 
+  const abrirCaixa = async (valorInicial: number) => {
+    if (caixaAberto) throw new Error('Já existe um caixa aberto.');
+    if (!Number.isFinite(valorInicial) || valorInicial < 0) throw new Error('Informe um valor inicial válido.');
+    await saveRecord('caixas', {
+      dataAbertura: new Date().toISOString(),
+      valorInicial,
+      status: 'aberto',
+      operador: user?.email || user?.uid || 'Operador'
+    });
+  };
+
+  const fecharCaixa = async () => {
+    if (!caixaAberto) throw new Error('Nenhum caixa aberto.');
+    await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixaAberto.id}`), {
+      status: 'fechado',
+      dataFechamento: new Date().toISOString(),
+      totalVendas: totalVendasCaixa,
+      valorFinal: Number(caixaAberto.valorInicial || 0) + totalVendasCaixa
+    });
+  };
+
+  const salvarProduto = (data: Partial<Produto>, id?: string) => saveRecord('produtos', data, id);
+  const excluirProduto = (id: string) => deleteRecord('produtos', id);
+  const salvarCliente = (data: Partial<Cliente>, id?: string) => saveRecord('clientes', data, id);
+  const excluirCliente = (id: string) => deleteRecord('clientes', id);
+  const salvarCadastro = (collection: string, data: Record<string, any>, id?: string) => saveRecord(collection, data, id);
+  const excluirCadastro = (collection: string, id: string) => deleteRecord(collection, id);
+
   const finalizarVenda = async (comoOrcamento = false) => {
     if (carrinho.length === 0 || !empresaId) return alert("Carrinho vazio!");
     if (!comoOrcamento && !caixaAberto) return alert("Abra o caixa primeiro!");
 
     let subtotal = carrinho.reduce((a, b) => a + (Number(b.venda) * b.qtd), 0);
     let custoTotal = carrinho.reduce((a, b) => a + (Number(b.custo) * b.qtd), 0);
-    let desc = Number(pdvDesconto) || 0;
+    let desc = Math.max(0, Number(pdvDesconto) || 0);
+    desc = Math.min(desc, subtotal);
     
     try {
       if (comoOrcamento) {
@@ -153,13 +214,23 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             data: new Date().toISOString(), status: 'pendente'
          });
       } else {
-        const promessasEstoque = carrinho.map(c => {
+          const promessasEstoque = carrinho.map(async c => {
            const prodRef = ref(db, `empresas/${empresaId}/produtos/${c.id}/qtd`);
-           return runTransaction(prodRef, (qtdAtual) => {
+            const qtdAntes = await get(prodRef);
+            const estoqueAntes = Number(qtdAntes.val());
+            if (!qtdAntes.exists() || !Number.isFinite(estoqueAntes) || estoqueAntes < c.qtd) {
+             throw new Error(`Estoque insuficiente para ${c.marca} ${c.modelo}.`);
+            }
+            const resultado = await runTransaction(prodRef, (qtdAtual) => {
               if (qtdAtual === null) return qtdAtual;
               const novaQtd = Number(qtdAtual) - c.qtd;
               return novaQtd >= 0 ? novaQtd : qtdAtual;
            });
+            const estoqueDepois = Number(resultado.snapshot.val());
+            if (!resultado.committed || estoqueDepois !== estoqueAntes - c.qtd) {
+             throw new Error(`Não foi possível reservar o estoque de ${c.marca} ${c.modelo}.`);
+            }
+            return resultado;
         });
 
         await Promise.all(promessasEstoque);
@@ -180,7 +251,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     user, loadingAuth, userRole, empresaId,
     produtos, clientes, vendas, caixas, orcamentos, carrinho,
     fornecedores, contas, categorias, usuarios,
-    activeTab, setActiveTab, addToCart, removeFromCart, finalizarVenda,
+    activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
+    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro,
+    addToCart, removeFromCart, finalizarVenda,
     caixaAberto, totalVendasCaixa, pdvCliente, setPdvCliente, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento
   };
 

@@ -17,7 +17,7 @@ function SidebarCategory({ label }: { label: string }) {
 }
 
 export function Sidebar() {
-  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole, auth } = useAppContext();
+  const { activeTab, setActiveTab, caixaAberto, orcamentos, userRole } = useAppContext();
   
   return (
     <aside className="hidden md:flex flex-col w-[270px] bg-white border-r border-slate-200 z-20 shadow-sm">
