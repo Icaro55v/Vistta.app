@@ -1,26 +1,28 @@
 {
-  "rules": {
-    ".read": false,
-    ".write": false,
-    "users": {
-      "$uid": {
-        ".read": "auth != null && auth.uid == $uid",
-        ".write": "auth != null && auth.uid == $uid && (!data.exists() ? newData.hasChildren(['empresaId', 'role']) && root.child('empresas').child(newData.child('empresaId').val()).child('info').child('criadoPor').val() == auth.uid : newData.child('empresaId').val() == data.child('empresaId').val() && newData.child('role').val() == data.child('role').val())"
-      }
-    },
-    "empresas": {
-      "$empresaId": {
-        "info": {
-          ".read": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
-          ".write": "auth != null && (root.child('users').child(auth.uid).child('empresaId').val() == $empresaId || (!data.exists() && newData.child('criadoPor').val() == auth.uid))",
-          ".validate": "newData.hasChildren(['nome', 'criadoPor']) && newData.child('criadoPor').isString()"
-        },
-        "$collection": {
-          ".read": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
-          ".write": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
-          ".indexOn": ["data", "status", "codigo", "cliId", "clienteId", "fornecedorId"]
-        }
-      }
-    }
-  }
+      "rules": {
+          ".read": false,
+              ".write": false,
+                  "users": {
+                        "$uid": {
+                                ".read": "auth != null && auth.uid == $uid",
+                                        ".write": "auth != null && auth.uid == $uid && (!data.exists() ? newData.hasChildren(['empresaId', 'role']) && root.child('empresas').child(newData.child('empresaId').val()).child('info').child('criadoPor').val() == auth.uid : newData.child('empresaId').val() == data.child('empresaId').val() && newData.child('role').val() == data.child('role').val())"
+                                              }
+                                                  },
+                                                      "empresas": {
+                                                            "$empresaId": {
+                                                                    "info": {
+                                                                              ".read": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
+                                                                                        ".write": "auth != null && (root.child('users').child(auth.uid).child('empresaId').val() == $empresaId || (!data.exists() && newData.child('criadoPor').val() == auth.uid))",
+                                                                                                  ".validate": "newData.hasChildren(['nome', 'criadoPor']) && newData.child('criadoPor').isString()"
+                                                                                                          },
+                                                                                                                  "$collection": {
+                                                                                                                            ".read": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
+                                                                                                                                      ".write": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
+                                                                                                                                                ".indexOn": ["data", "status", "codigo", "cliId", "clienteId", "fornecedorId"]
+                                                                                                                                                        }
+                                                                                                                                                              }
+                                                                                                                                                                  }
+                                                                                                                                                                    }
+                                                                                                                                                                    }
+                                                                                                                                                                    
 }
