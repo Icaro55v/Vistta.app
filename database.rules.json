@@ -11,7 +11,7 @@
     "empresas": {
       "$empresaId": {
         "info": {
-          ".read": "auth != null && (root.child('users').child(auth.uid).child('empresaId').val() == $empresaId || (!data.exists() && newData.child('criadoPor').val() == auth.uid))",
+          ".read": "auth != null && root.child('users').child(auth.uid).child('empresaId').val() == $empresaId",
           ".write": "auth != null && (root.child('users').child(auth.uid).child('empresaId').val() == $empresaId || (!data.exists() && newData.child('criadoPor').val() == auth.uid))",
           ".validate": "newData.hasChildren(['nome', 'criadoPor']) && newData.child('criadoPor').isString()"
         },
