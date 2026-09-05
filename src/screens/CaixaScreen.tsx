@@ -39,12 +39,12 @@ export function CaixaScreen() {
       </div>
 
       {caixaAberto ? (
-        <div className="bg-white rounded-3xl p-8 mb-10 flex justify-between items-center shadow-sm border border-slate-100">
+        <div className="bg-white rounded-3xl p-6 sm:p-8 mb-10 flex flex-col gap-8 shadow-sm border border-slate-100">
            <div>
              <p className="text-emerald-500 font-bold uppercase text-xs mb-2">Caixa Aberto</p>
              <p className="text-slate-500">Operador: <span className="font-bold text-slate-900">{caixaAberto.operador}</span></p>
            </div>
-           <div className="flex gap-10">
+           <div className="flex flex-col gap-6 sm:flex-row sm:gap-10">
               <div className="text-right">
                 <p className="text-[11px] font-bold text-slate-400 uppercase mb-1">Fundo Inicial</p>
                 <p className="text-2xl font-bold">{formatMoney(caixaAberto.valorInicial)}</p>
@@ -53,7 +53,7 @@ export function CaixaScreen() {
                 <p className="text-[11px] font-bold text-slate-400 uppercase mb-1">Vendas no Caixa</p>
                 <p className="text-2xl font-bold text-emerald-500">+ {formatMoney(totalVendasCaixa)}</p>
               </div>
-              <div className="text-right pl-10 border-l border-slate-100">
+              <div className="text-right sm:pl-10 sm:border-l border-slate-100">
                 <p className="text-[11px] font-bold text-slate-400 uppercase mb-1">Saldo Atual</p>
                  <p className="text-4xl font-extrabold text-[#4A3AFF]">{formatMoney((caixaAberto.valorInicial || 0) + totalVendasCaixa + totalLancamentos)}</p>
               </div>

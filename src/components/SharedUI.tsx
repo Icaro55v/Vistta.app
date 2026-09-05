@@ -44,10 +44,10 @@ export function ModalBase({ open, onClose, title, width = "max-w-md", children }
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-      <div className={`bg-white rounded-[32px] w-full ${width} shadow-2xl flex flex-col max-h-[90vh] animate-fade-in`}>
-        <div className="flex justify-between items-center p-6 border-b border-slate-100">
-          <h2 className="text-xl font-bold text-slate-800">{title}</h2>
-          <button onClick={onClose} className="p-2 bg-slate-100 rounded-full text-slate-500 hover:text-rose-500 transition-colors"><X size={20} /></button>
+      <div className={`bg-white dark:bg-slate-800 rounded-[32px] w-full ${width} shadow-2xl flex flex-col max-h-[90vh] animate-fade-in`}>
+        <div className="flex justify-between items-center gap-4 p-6 border-b border-slate-100 dark:border-slate-700">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white">{title}</h2>
+          <button onClick={onClose} className="shrink-0 p-2 bg-slate-100 dark:bg-slate-700 rounded-full text-slate-500 hover:text-rose-500 transition-colors"><X size={20} /></button>
         </div>
         <div className="overflow-y-auto custom-scrollbar p-6">
           {children}

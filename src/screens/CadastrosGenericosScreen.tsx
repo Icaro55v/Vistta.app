@@ -70,12 +70,12 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 capitalize">{activeTab}</h1>
           <p className="text-slate-500">Gestão completa liberada.</p>
         </div>
-        <button onClick={() => { setItemEditando(null); setModalAberto(true); }} className="bg-[#4A3AFF] text-white px-6 py-3 rounded-xl font-semibold flex items-center">
+        <button onClick={() => { setItemEditando(null); setModalAberto(true); }} className="flex w-full items-center justify-center rounded-xl bg-[#4A3AFF] px-6 py-3 font-semibold text-white sm:w-auto">
           <Plus size={20} className="mr-2" /> Adicionar
         </button>
       </div>
