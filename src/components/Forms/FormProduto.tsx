@@ -1,0 +1,40 @@
+import React, { useState } from 'react';
+
+export function FormProduto({ data, onSave, onClose }: any) {
+  const [form, setForm] = useState(data || {
+    codigo: '', categoria: 'Armação', marca: '', modelo: '', cor: '',
+    custo: '', venda: '', qtd: '', min: ''
+  });
+
+  const h = (f: string, v: any) => setForm((p: any) => ({ ...p, [f]: v }));
+  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-[#4A3AFF] transition-all text-slate-900 dark:text-white";
+  const labelClass = "text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2 block";
+
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); onSave(form); }}>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div><label className={labelClass}>SKU (Cód)</label><input required value={form.codigo} onChange={e=>h('codigo', e.target.value)} className={inputClass} /></div>
+        <div className="sm:col-span-2">
+          <label className={labelClass}>Categoria</label>
+          <select value={form.categoria} onChange={e=>h('categoria', e.target.value)} className={inputClass}>
+            <option>Armação</option><option>Lente</option><option>Óculos de Sol</option><option>Acessório</option>
+          </select>
+        </div>
+        <div><label className={labelClass}>Marca</label><input required value={form.marca} onChange={e=>h('marca', e.target.value)} className={inputClass} /></div>
+        <div><label className={labelClass}>Modelo</label><input value={form.modelo} onChange={e=>h('modelo', e.target.value)} className={inputClass} /></div>
+        <div><label className={labelClass}>Cor</label><input value={form.cor} onChange={e=>h('cor', e.target.value)} className={inputClass} /></div>
+
+        <div className="sm:col-span-3 border-t border-slate-100 dark:border-slate-700 my-2"></div>
+
+        <div><label className={labelClass}>Custo (R$)</label><input type="number" step="0.01" required value={form.custo} onChange={e=>h('custo', e.target.value)} className={inputClass} /></div>
+        <div><label className="text-[12px] font-bold text-emerald-500 uppercase tracking-wider mb-2 block">Venda (R$)</label><input type="number" step="0.01" required value={form.venda} onChange={e=>h('venda', e.target.value)} className={`${inputClass} border-emerald-200 dark:border-emerald-800 focus:border-emerald-500 font-extrabold`} /></div>
+        <div><label className={labelClass}>Estoque Atual</label><input type="number" required value={form.qtd} onChange={e=>h('qtd', e.target.value)} className={inputClass} /></div>
+        <div><label className="text-[12px] font-bold text-rose-500 uppercase tracking-wider mb-2 block">Estoque Mín.</label><input type="number" required value={form.min} onChange={e=>h('min', e.target.value)} className={`${inputClass} border-rose-200 dark:border-rose-800 focus:border-rose-500`} /></div>
+      </div>
+      <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 sm:gap-4">
+        <button type="button" onClick={onClose} className="px-6 py-3.5 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
+        <button type="submit" className="px-8 py-3.5 rounded-xl font-bold bg-[#4A3AFF] text-white">Salvar Produto</button>
+      </div>
+    </form>
+  );
+}
