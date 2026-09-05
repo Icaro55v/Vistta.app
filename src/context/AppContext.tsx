@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, ReactNo
 import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get } from 'firebase/database';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
-import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento } from '../types';
+import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
 
 export const formatMoney = (v: number | string) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -17,6 +17,7 @@ interface AppContextType {
   vendas: Venda[];
   caixas: Caixa[];
   orcamentos: Orcamento[];
+  ordensServico: OrdemServico[];
   fornecedores: any[];
   contas: any[];
   categorias: any[];
@@ -34,6 +35,8 @@ interface AppContextType {
   excluirCliente: (id: string) => Promise<void>;
   salvarCadastro: (collection: string, data: Record<string, any>, id?: string) => Promise<void>;
   excluirCadastro: (collection: string, id: string) => Promise<void>;
+  salvarOrdemServico: (data: Partial<OrdemServico>, id?: string) => Promise<void>;
+  registrarLancamentoCaixa: (data: { tipo: 'entrada' | 'saida' | 'sangria'; descricao: string; valor: number }) => Promise<void>;
   caixaAberto: Caixa | undefined;
   totalVendasCaixa: number;
   addToCart: (prod: Produto) => void;
@@ -71,6 +74,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [caixas, setCaixas] = useState<Caixa[]>([]);
   const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
+  const [ordensServico, setOrdensServico] = useState<OrdemServico[]>([]);
   const [fornecedores, setFornecedores] = useState<any[]>([]);
   const [contas, setContas] = useState<any[]>([]);
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -183,6 +187,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { name: 'categorias', setter: setCategorias, queryRef: ref(db, `${basePath}/categorias`) },
       { name: 'usuarios', setter: setUsuarios, queryRef: ref(db, `${basePath}/usuarios`) },
       { name: 'orcamentos', setter: setOrcamentos, queryRef: ref(db, `${basePath}/orcamentos`) },
+      { name: 'ordensServico', setter: setOrdensServico, queryRef: ref(db, `${basePath}/ordensServico`) },
       { name: 'vendas', setter: setVendas, queryRef: query(ref(db, `${basePath}/vendas`), orderByChild('data'), startAt(inicioMes.toISOString())) },
       { name: 'caixas', setter: setCaixas, queryRef: query(ref(db, `${basePath}/caixas`), limitToLast(100)) }
     ];
@@ -241,6 +246,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const excluirCliente = (id: string) => deleteRecord('clientes', id);
   const salvarCadastro = (collection: string, data: Record<string, any>, id?: string) => saveRecord(collection, data, id);
   const excluirCadastro = (collection: string, id: string) => deleteRecord(collection, id);
+  const salvarOrdemServico = (data: Partial<OrdemServico>, id?: string) => saveRecord('ordensServico', data, id);
+
+  const registrarLancamentoCaixa = async (data: { tipo: 'entrada' | 'saida' | 'sangria'; descricao: string; valor: number }) => {
+    const caixa = caixaAberto;
+    if (!caixa) throw new Error('Abra o caixa antes de registrar um lançamento.');
+    if (!Number.isFinite(data.valor) || data.valor <= 0) throw new Error('Informe um valor válido.');
+    await push(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}/lancamentos`), {
+      ...data,
+      data: new Date().toISOString(),
+      operador: user?.email || user?.uid || 'Operador'
+    });
+  };
 
   const finalizarVenda = async (comoOrcamento = false) => {
     if (carrinho.length === 0 || !empresaId) return alert("Carrinho vazio!");
@@ -295,10 +312,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const value = {
     user, loadingAuth, userRole, empresaId, dadosEmpresa,
-    produtos, clientes, vendas, caixas, orcamentos, carrinho,
+    produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
-    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro,
+    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, salvarOrdemServico, registrarLancamentoCaixa,
     addToCart, removeFromCart, finalizarVenda,
     caixaAberto, totalVendasCaixa, pdvCliente, setPdvCliente, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento
   };
