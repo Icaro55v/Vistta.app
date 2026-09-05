@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, Wallet, ShoppingCart, FileText, Boxes, Users, Tags, TrendingUp, ArrowRightLeft, Truck, UserPlus, LogOut } from 'lucide-react';
 import { useAppContext } from '../../context/AppContext';
 import { LogoVistta } from '../SharedUI';
+import { Orcamento } from '../../types';
 
 function SidebarItem({ icon: Icon, label, active, onClick, badge, badgeColor }: any) {
   return (
@@ -32,7 +33,7 @@ export function Sidebar() {
         <SidebarCategory label="Operação" />
         <SidebarItem icon={Wallet} label="Caixa Diário" active={activeTab === 'caixa'} onClick={() => setActiveTab('caixa')} badge={caixaAberto ? 'Aberto' : 'Fechado'} badgeColor={caixaAberto ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'} />
         <SidebarItem icon={ShoppingCart} label="PDV" active={activeTab === 'vendas'} onClick={() => setActiveTab('vendas')} />
-        <SidebarItem icon={FileText} label="Orçamentos" active={activeTab === 'orcamentos'} onClick={() => setActiveTab('orcamentos')} badge={orcamentos.filter(o=>o.status==='pendente').length || null} badgeColor="bg-amber-100 text-amber-700" />
+        <SidebarItem icon={FileText} label="Orçamentos" active={activeTab === 'orcamentos'} onClick={() => setActiveTab('orcamentos')} badge={orcamentos.filter((o: Orcamento) => o.status === 'pendente').length || null} badgeColor="bg-amber-100 text-amber-700" />
         
         <SidebarCategory label="Cadastros" />
         <SidebarItem icon={Boxes} label="Estoque" active={activeTab === 'estoque'} onClick={() => setActiveTab('estoque')} />

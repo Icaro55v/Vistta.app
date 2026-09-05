@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useMemo, ReactNo
 import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get } from 'firebase/database';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { db, auth } from '../config/firebase';
-import { Produto, Cliente, Venda, Caixa, CarrinhoItem } from '../types';
+import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento } from '../types';
 
 export const formatMoney = (v: number | string) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -15,7 +15,7 @@ interface AppContextType {
   clientes: Cliente[];
   vendas: Venda[];
   caixas: Caixa[];
-  orcamentos: any[];
+  orcamentos: Orcamento[];
   fornecedores: any[];
   contas: any[];
   categorias: any[];
@@ -68,7 +68,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [vendas, setVendas] = useState<Venda[]>([]);
   const [caixas, setCaixas] = useState<Caixa[]>([]);
-  const [orcamentos, setOrcamentos] = useState<any[]>([]);
+  const [orcamentos, setOrcamentos] = useState<Orcamento[]>([]);
   const [fornecedores, setFornecedores] = useState<any[]>([]);
   const [contas, setContas] = useState<any[]>([]);
   const [categorias, setCategorias] = useState<any[]>([]);
@@ -183,12 +183,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const fecharCaixa = async () => {
-    if (!caixaAberto) throw new Error('Nenhum caixa aberto.');
-    await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixaAberto.id}`), {
+    const caixa = caixaAberto;
+    if (!caixa) throw new Error('Nenhum caixa aberto.');
+    await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}`), {
       status: 'fechado',
       dataFechamento: new Date().toISOString(),
       totalVendas: totalVendasCaixa,
-      valorFinal: Number(caixaAberto.valorInicial || 0) + totalVendasCaixa
+      valorFinal: Number(caixa.valorInicial || 0) + totalVendasCaixa
     });
   };
 

@@ -44,6 +44,17 @@ export interface Venda {
   caixaId?: string;
 }
 
+export interface Orcamento {
+  id: string;
+  cliId: string;
+  subtotal: number;
+  desconto: number;
+  total: number;
+  itens: Array<{ id: string; marca: string; modelo: string; qtd: number; venda: number | string }>;
+  data: string;
+  status: 'pendente' | 'aprovado' | 'cancelado';
+}
+
 export interface Caixa {
   id: string;
   dataAbertura: string;
