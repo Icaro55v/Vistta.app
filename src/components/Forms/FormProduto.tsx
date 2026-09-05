@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 export function FormProduto({ data, onSave, onClose }: any) {
   const [form, setForm] = useState(data || {
-    codigo: '', categoria: 'Armação', marca: '', modelo: '', cor: '',
+    codigo: '', categoria: 'Armações', marca: '', modelo: '', cor: '', tamanho: '', material: '', fornecedorId: '', tratamento: '',
     custo: '', venda: '', qtd: '', min: ''
   });
 
@@ -17,12 +17,16 @@ export function FormProduto({ data, onSave, onClose }: any) {
         <div className="sm:col-span-2">
           <label className={labelClass}>Categoria</label>
           <select value={form.categoria} onChange={e=>h('categoria', e.target.value)} className={inputClass}>
-            <option>Armação</option><option>Lente</option><option>Óculos de Sol</option><option>Acessório</option>
+            <option>Armações</option><option>Lentes de Contato</option><option>Lentes Oftálmicas</option><option>Acessórios/Insumos</option>
           </select>
         </div>
         <div><label className={labelClass}>Marca</label><input required value={form.marca} onChange={e=>h('marca', e.target.value)} className={inputClass} /></div>
         <div><label className={labelClass}>Modelo</label><input value={form.modelo} onChange={e=>h('modelo', e.target.value)} className={inputClass} /></div>
         <div><label className={labelClass}>Cor</label><input value={form.cor} onChange={e=>h('cor', e.target.value)} className={inputClass} /></div>
+        <div><label className={labelClass}>Tamanho</label><input value={form.tamanho} onChange={e=>h('tamanho', e.target.value)} className={inputClass} placeholder="Ex: 54-18" /></div>
+        <div><label className={labelClass}>Material</label><input value={form.material} onChange={e=>h('material', e.target.value)} className={inputClass} /></div>
+        <div><label className={labelClass}>Fornecedor (ID)</label><input value={form.fornecedorId} onChange={e=>h('fornecedorId', e.target.value)} className={inputClass} /></div>
+        <div className="sm:col-span-3"><label className={labelClass}>Tratamento / Especificação</label><input value={form.tratamento} onChange={e=>h('tratamento', e.target.value)} className={inputClass} placeholder="Antirreflexo, Transitions, multifocal..." /></div>
 
         <div className="sm:col-span-3 border-t border-slate-100 dark:border-slate-700 my-2"></div>
 

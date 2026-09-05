@@ -22,16 +22,27 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
   const data = getCollectionData();
 
   const configs: Record<string, any> = {
-    fornecedores: { defaultData: { nome: '', cnpj: '', contato: '' }, fields: [
-      { name: 'nome', label: 'Nome', type: 'text', required: true },
+    fornecedores: { defaultData: { razaoSocial: '', nomeFantasia: '', cnpj: '', inscricaoEstadual: '', telefone: '', email: '', contatoComercial: '', categoriaFornecimento: 'Armações', prazoEntrega: '', condicoesComerciais: '', parceriaAtiva: true }, fields: [
+      { name: 'razaoSocial', label: 'Razão Social', type: 'text', required: true },
+      { name: 'nomeFantasia', label: 'Nome Fantasia', type: 'text' },
       { name: 'cnpj', label: 'CNPJ', type: 'text' },
-      { name: 'contato', label: 'Contato', type: 'text' }
+      { name: 'inscricaoEstadual', label: 'Inscrição Estadual', type: 'text' },
+      { name: 'telefone', label: 'Telefone', type: 'text' },
+      { name: 'email', label: 'E-mail', type: 'email' },
+      { name: 'contatoComercial', label: 'Contato Comercial', type: 'text' },
+      { name: 'categoriaFornecimento', label: 'Categoria de Fornecimento', type: 'select', options: [{ val: 'Armações', label: 'Armações' }, { val: 'Lentes de Contato', label: 'Lentes de Contato' }, { val: 'Lentes Oftálmicas', label: 'Lentes Oftálmicas' }, { val: 'Insumos/Laboratório', label: 'Insumos/Laboratório' }] },
+      { name: 'prazoEntrega', label: 'Prazo padrão (dias)', type: 'number' },
+      { name: 'condicoesComerciais', label: 'Condições Comerciais', type: 'text' },
+      { name: 'endereco', label: 'Endereço completo', type: 'text' }
     ] },
-    contas: { defaultData: { descricao: '', tipo: 'pagar', valor: '', vencimento: '' }, fields: [
+    contas: { defaultData: { descricao: '', tipo: 'pagar', valor: '', vencimento: '', fornecedorId: '', formaPagamento: 'PIX', status: 'pendente' }, fields: [
       { name: 'descricao', label: 'Descrição', type: 'text', required: true },
       { name: 'tipo', label: 'Tipo', type: 'select', required: true, options: [{ val: 'pagar', label: 'A pagar' }, { val: 'receber', label: 'A receber' }] },
       { name: 'valor', label: 'Valor', type: 'number', step: '0.01', required: true },
-      { name: 'vencimento', label: 'Vencimento', type: 'date' }
+      { name: 'vencimento', label: 'Vencimento', type: 'date' },
+      { name: 'fornecedorId', label: 'Fornecedor vinculado', type: 'text' },
+      { name: 'formaPagamento', label: 'Forma de pagamento', type: 'select', options: [{ val: 'PIX', label: 'PIX' }, { val: 'cartao', label: 'Cartão' }, { val: 'crediario', label: 'Crediário próprio' }, { val: 'dinheiro', label: 'Dinheiro' }] },
+      { name: 'status', label: 'Status', type: 'select', options: [{ val: 'pendente', label: 'Pendente' }, { val: 'pago', label: 'Pago/Recebido' }] }
     ] },
     categorias: { defaultData: { nome: '' }, fields: [
       { name: 'nome', label: 'Nome', type: 'text', required: true }
@@ -77,11 +88,11 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
                 {data?.map((item: any) => (
                 <tr key={item.id} className="hover:bg-slate-50 transition-colors">
                     <td className="py-4 px-6">
-                    <div className="font-bold text-[14px]">{item.nome || item.descricao}</div>
-                    <div className="text-[12px] text-slate-400 mt-0.5">{item.cnpj || item.email || (item.vencimento ? `Venc: ${new Date(item.vencimento).toLocaleDateString('pt-BR')}` : '')}</div>
+                    <div className="font-bold text-[14px]">{item.nome || item.razaoSocial || item.descricao}</div>
+                    <div className="text-[12px] text-slate-400 mt-0.5">{item.cnpj || item.email || item.nomeFantasia || (item.vencimento ? `Venc: ${new Date(item.vencimento).toLocaleDateString('pt-BR')}` : '')}</div>
                     </td>
                     <td className="py-4 px-6 text-[14px] font-medium text-slate-600">
-                    {item.valor ? <span className={`font-extrabold ${item.tipo==='pagar'?'text-rose-500':'text-emerald-500'}`}>{formatMoney(item.valor)}</span> : (item.contato || item.perfil || item.descricao || '-')}
+                    {item.valor ? <span className={`font-extrabold ${item.tipo==='pagar'?'text-rose-500':'text-emerald-500'}`}>{formatMoney(item.valor)}</span> : (item.contato || item.telefone || item.categoriaFornecimento || item.perfil || item.descricao || '-')}
                     </td>
                     <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">

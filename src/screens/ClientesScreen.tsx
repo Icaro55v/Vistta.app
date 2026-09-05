@@ -6,7 +6,7 @@ import { useAppContext } from '../context/AppContext';
 import { Cliente } from '../types';
 
 export function ClientesScreen() {
-  const { clientes, salvarCliente, excluirCliente } = useAppContext();
+  const { clientes, salvarCliente, excluirCliente, vendas, ordensServico } = useAppContext();
   const [clienteEditando, setClienteEditando] = React.useState<Cliente | null>(null);
   const [modalAberto, setModalAberto] = React.useState(false);
 
@@ -46,7 +46,7 @@ export function ClientesScreen() {
                     <div className="font-bold text-[14px]">{c.nome}</div>
                     <div className="text-[12px] text-slate-400 mt-0.5">{c.cpf || 'Sem CPF'}</div>
                   </td>
-                  <td className="py-4 px-6 text-[14px] font-medium text-slate-600">{c.tel}</td>
+                  <td className="py-4 px-6 text-[14px] font-medium text-slate-600"><a href={`https://wa.me/${(c.tel || '').replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="text-emerald-600 hover:underline">{c.tel}</a><div className="text-[11px] text-slate-400 mt-1">{vendas.filter(venda => venda.cliId === c.id).length} compra(s) · {ordensServico.filter(os => os.clienteId === c.id).length} OS</div></td>
                   <td className="py-4 px-6">
                     <div className="text-[14px] font-medium text-slate-700">{c.prescricao?.medico || 'Não informado'}</div>
                   </td>

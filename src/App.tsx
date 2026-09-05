@@ -11,6 +11,7 @@ import { ClientesScreen } from './screens/ClientesScreen';
 import { OrcamentosScreen } from './screens/OrcamentosScreen';
 import { FinanceiroScreen } from './screens/FinanceiroScreen';
 import { CadastrosGenericosScreen } from './screens/CadastrosGenericosScreen';
+import { OrdensServicoScreen } from './screens/OrdensServicoScreen';
 import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun } from 'lucide-react';
 
 function MainLayout() {
@@ -60,6 +61,7 @@ function MainLayout() {
         {activeTab === 'estoque' && <EstoqueScreen />}
         {activeTab === 'clientes' && <ClientesScreen />}
         {activeTab === 'orcamentos' && <OrcamentosScreen />}
+        {activeTab === 'ordens' && <OrdensServicoScreen />}
         
         {activeTab === 'financeiro' && <FinanceiroScreen />}
         {['fornecedores', 'contas', 'categorias', 'usuarios'].includes(activeTab) && (
@@ -81,7 +83,7 @@ function MainLayout() {
           </div>
           <div className="space-y-2">
             {[
-              ['caixa', 'Caixa Diário'], ['orcamentos', 'Orçamentos'], ['categorias', 'Categorias'],
+              ['caixa', 'Caixa Diário'], ['orcamentos', 'Orçamentos'], ['ordens', 'Ordens de Serviço'], ['categorias', 'Categorias'],
               ...(userRole === 'admin' ? [['financeiro', 'Financeiro'], ['contas', 'Contas'], ['fornecedores', 'Fornecedores'], ['usuarios', 'Usuários']] : [])
             ].map(([tab, label]) => <button key={tab} onClick={() => { setActiveTab(tab); setMobileMenuOpen(false); }} className="w-full text-left px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-slate-700">{label}</button>)}
           </div>

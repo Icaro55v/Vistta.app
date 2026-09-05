@@ -36,6 +36,7 @@ export function Sidebar() {
         <SidebarItem icon={Wallet} label="Caixa Diário" active={activeTab === 'caixa'} onClick={() => setActiveTab('caixa')} badge={caixaAberto ? 'Aberto' : 'Fechado'} badgeColor={caixaAberto ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'} />
         <SidebarItem icon={ShoppingCart} label="PDV" active={activeTab === 'vendas'} onClick={() => setActiveTab('vendas')} />
         <SidebarItem icon={FileText} label="Orçamentos" active={activeTab === 'orcamentos'} onClick={() => setActiveTab('orcamentos')} badge={orcamentos.filter((o: Orcamento) => o.status === 'pendente').length || null} badgeColor="bg-amber-100 text-amber-700" />
+        <SidebarItem icon={FileText} label="Ordens de Serviço" active={activeTab === 'ordens'} onClick={() => setActiveTab('ordens')} />
         
         <SidebarCategory label="Cadastros" />
         <SidebarItem icon={Boxes} label="Estoque" active={activeTab === 'estoque'} onClick={() => setActiveTab('estoque')} />
