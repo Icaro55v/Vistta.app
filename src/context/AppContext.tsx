@@ -18,6 +18,7 @@ interface AppContextType {
   empresaId: string | null;
   dadosEmpresa: { nome?: string } | null;
   databaseError: string | null;
+  configurarOtica: (nome: string) => Promise<void>;
   produtos: Produto[];
   clientes: Cliente[];
   vendas: Venda[];
@@ -100,6 +101,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (!user) throw new Error('Usuário não autenticado. Entre novamente.');
     if (!empresaId) throw new Error('Empresa não identificada.');
     return empresaId;
+  };
+
+  const configurarOtica = async (nome: string) => {
+    const nomeNormalizado = nome.trim();
+    if (!user) throw new Error('Usuário não autenticado.');
+    if (!nomeNormalizado) throw new Error('Informe o nome da ótica.');
+    if (empresaId) return;
+    const empresaRef = push(ref(db, 'empresas'));
+    if (!empresaRef.key) throw new Error('Não foi possível criar a empresa.');
+    await update(ref(db, `empresas/${empresaRef.key}/info`), { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid });
+    await update(ref(db, `users/${user.uid}`), { empresaId: empresaRef.key, role: 'admin', email: user.email || '' });
   };
 
   const saveRecord = async (collection: string, data: Record<string, any>, id?: string) => {
@@ -346,7 +358,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = {
-    user, loadingAuth, userRole, empresaId, dadosEmpresa, databaseError,
+    user, loadingAuth, userRole, empresaId, dadosEmpresa, databaseError, configurarOtica,
     produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,

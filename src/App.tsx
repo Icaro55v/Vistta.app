@@ -13,6 +13,7 @@ import { FinanceiroScreen } from './screens/FinanceiroScreen';
 import { CadastrosGenericosScreen } from './screens/CadastrosGenericosScreen';
 import { OrdensServicoScreen } from './screens/OrdensServicoScreen';
 import { HelpScreen } from './screens/HelpScreen';
+import { SetupOticaScreen } from './screens/SetupOticaScreen';
 import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun } from 'lucide-react';
 
 function MainLayout() {
@@ -48,9 +49,7 @@ function MainLayout() {
   }
 
   if (!empresaId) {
-    return <div className="flex h-screen w-full items-center justify-center bg-slate-50 dark:bg-slate-900 p-6 text-center">
-      <div className="max-w-md"><h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3">Perfil da empresa não configurado</h2><p className="text-slate-500 mb-6">Sua conta foi autenticada, mas ainda não está vinculada a uma ótica. Saia e entre novamente ou tente recarregar.</p><button onClick={() => window.location.reload()} className="px-5 py-3 rounded-xl bg-[#4A3AFF] text-white font-bold">Tentar novamente</button></div>
-    </div>;
+    return <SetupOticaScreen />;
   }
 
   // Renderiza o Sistema com o Menu Lateral
