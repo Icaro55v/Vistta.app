@@ -29,7 +29,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
     if (!this.state.hasError) return this.props.children;
 
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-slate-50 p-4 sm:p-6 text-center">
         <div className="max-w-md rounded-3xl bg-white p-8 shadow-lg">
           <h1 className="mb-3 text-xl font-bold text-slate-900">Ocorreu um erro inesperado</h1>
           <p className="mb-6 text-sm text-slate-500">A tela foi protegida para evitar uma falha silenciosa. Recarregue e tente novamente.</p>

@@ -13,11 +13,12 @@ interface DashCardProps {
 
 export function DashCard({ title, value, subtitle, icon: Icon, bg = "bg-white dark:bg-slate-800", color = "text-slate-900 dark:text-white", border = "border-slate-100 dark:border-slate-700" }: DashCardProps) {
   return (
-    <div className={`p-6 rounded-3xl border shadow-sm ${bg} ${border}`}>
+    <div className={`group p-5 rounded-[24px] border shadow-[0_10px_35px_rgba(48,32,77,.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_38px_rgba(48,32,77,.1)] ${bg} ${border}`}>
       <div className="flex items-start justify-between mb-4">
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg === 'bg-white dark:bg-slate-800' ? 'bg-indigo-50 text-[#4A3AFF]' : color.replace('text-', 'bg-').replace('500', '100') + ' ' + color}`}>
+        <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${bg === 'bg-white dark:bg-slate-800' ? 'bg-[#eeeaff] text-[#6d4aff]' : color.replace('text-', 'bg-').replace('500', '100') + ' ' + color}`}>
           <Icon size={24} />
         </div>
+        <span className="h-2 w-2 rounded-full bg-[#c6ed76] opacity-80 group-hover:scale-125 transition-transform" />
       </div>
       <div>
         <h3 className="text-[13px] font-bold text-slate-500 uppercase tracking-wider mb-1">{title}</h3>
@@ -30,7 +31,7 @@ export function DashCard({ title, value, subtitle, icon: Icon, bg = "bg-white da
 
 export function ActionCard({ icon: Icon, title, desc, onClick, color, bg }: any) {
   return (
-    <button onClick={onClick} className={`text-left p-6 rounded-3xl border border-transparent hover:border-slate-200 shadow-sm transition-all group ${bg}`}>
+    <button onClick={onClick} className={`text-left p-5 rounded-[22px] border border-transparent hover:border-[#dcd5ee] shadow-[0_8px_24px_rgba(48,32,77,.04)] hover:shadow-[0_12px_28px_rgba(48,32,77,.1)] transition-all group ${bg}`}>
       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-white shadow-sm ${color} group-hover:scale-110 transition-transform`}>
         <Icon size={24} />
       </div>
@@ -44,12 +45,12 @@ export function ModalBase({ open, onClose, title, width = "max-w-md", children }
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-      <div className={`bg-white dark:bg-slate-800 rounded-[32px] w-full ${width} shadow-2xl flex flex-col max-h-[90vh] animate-fade-in`}>
-        <div className="flex justify-between items-center gap-4 p-6 border-b border-slate-100 dark:border-slate-700">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white">{title}</h2>
+      <div className={`bg-white dark:bg-slate-800 rounded-[24px] sm:rounded-[32px] w-full ${width} shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[90vh] animate-fade-in`}>
+        <div className="flex justify-between items-center gap-4 p-4 sm:p-6 border-b border-slate-100 dark:border-slate-700">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">{title}</h2>
           <button onClick={onClose} className="shrink-0 p-2 bg-slate-100 dark:bg-slate-700 rounded-full text-slate-500 hover:text-rose-500 transition-colors"><X size={20} /></button>
         </div>
-        <div className="overflow-y-auto custom-scrollbar p-6">
+        <div className="overflow-y-auto custom-scrollbar p-4 sm:p-6">
           {children}
         </div>
       </div>
@@ -57,22 +58,35 @@ export function ModalBase({ open, onClose, title, width = "max-w-md", children }
   );
 }
 
-// AQUI ESTÁ A LOGO SENDO EXPORTADA CORRETAMENTE
 export function LogoVistta({ className = "", solidWhite = false }: { className?: string, solidWhite?: boolean }) {
-  const cLeft = solidWhite ? "currentColor" : "white";
-  const cRight = solidWhite ? "currentColor" : "#a094ff";
-  
+  return <img src="/vistta-logo.png" className={className} aria-label="Logo VISTTA" alt="Logo VISTTA" loading="eager" decoding="async" draggable="false" />;
+}
+
+export function CreatorLogo({ className = "", solidWhite = false }: { className?: string, solidWhite?: boolean }) {
   return (
-    <svg viewBox="0 0 120 60" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-       <g stroke={cLeft} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
-         <circle cx="38" cy="36" r="14" />
-         <path d="M 28 26 Q 16 12 10 22" />
-       </g>
-       <g stroke={cRight} strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
-         <circle cx="82" cy="36" r="14" />
-         <path d="M 92 26 Q 104 12 110 22" />
-         <path d="M 52 36 Q 60 28 68 36" />
-       </g>
+    <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} aria-label="Logo AXXIS7">
+      <defs>
+        <linearGradient id="vistta-blue" x1="20" y1="12" x2="62" y2="83" gradientUnits="userSpaceOnUse">
+          <stop stopColor={solidWhite ? '#ffffff' : '#d8e8ff'} />
+          <stop offset=".45" stopColor={solidWhite ? '#dbe5ff' : '#5f9dff'} />
+          <stop offset="1" stopColor={solidWhite ? '#ffffff' : '#073b85'} />
+        </linearGradient>
+        <linearGradient id="vistta-purple" x1="47" y1="40" x2="72" y2="91" gradientUnits="userSpaceOnUse">
+          <stop stopColor={solidWhite ? '#ffffff' : '#d9b8ff'} />
+          <stop offset=".45" stopColor={solidWhite ? '#ffffff' : '#8c43ff'} />
+          <stop offset="1" stopColor={solidWhite ? '#ffffff' : '#3b087f'} />
+        </linearGradient>
+        <linearGradient id="vistta-ring" x1="20" y1="14" x2="82" y2="87" gradientUnits="userSpaceOnUse">
+          <stop stopColor={solidWhite ? '#ffffff' : '#4c78b9'} />
+          <stop offset=".5" stopColor={solidWhite ? '#ffffff' : '#081326'} />
+          <stop offset="1" stopColor={solidWhite ? '#ffffff' : '#8d3fff'} />
+        </linearGradient>
+      </defs>
+      <path d="M8 39C12 20 28 8 47 7" stroke="url(#vistta-ring)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M53 8C75 11 90 27 93 47M92 57C88 77 72 91 53 94" stroke="url(#vistta-ring)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M10 53C9 73 22 88 42 94" stroke="url(#vistta-ring)" strokeWidth="2" strokeLinecap="round" />
+      <path d="M45 8L21 72H38L56 49L48 48L67 19H50L45 8Z" fill="url(#vistta-blue)" stroke="#8dbbff" strokeWidth=".45" strokeLinejoin="round" />
+      <path d="M53 39H80L64 62H78L47 94L57 68H44L53 39Z" fill="url(#vistta-purple)" stroke="#d9b8ff" strokeWidth=".45" strokeLinejoin="round" />
     </svg>
   );
 }
