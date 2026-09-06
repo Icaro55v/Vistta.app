@@ -66,7 +66,7 @@ export function EstoqueScreen() {
                   </td>
                   <td className="py-4 px-6 text-center">
                     <button onClick={() => { setProdutoEditando(p); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[var(--vistta-violet)] hover:bg-[var(--vistta-lavender)]"><Edit2 size={16} /></button>
-                    <button onClick={() => excluirProduto(p.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                    <button aria-label={`Excluir produto ${p.marca} ${p.modelo}`} onClick={() => { if (window.confirm(`Excluir o produto ${p.marca} ${p.modelo}?`)) excluirProduto(p.id).catch((error: any) => alert(error.message)); }} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                   </td>
                 </tr>
               ))}

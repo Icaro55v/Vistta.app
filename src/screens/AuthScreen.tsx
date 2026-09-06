@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
 import { ref, update, get } from 'firebase/database';
 import { auth, db } from '../config/firebase';
+import { verifyRecaptcha } from '../services/recaptcha';
 import { AlertTriangle, Mail, Lock, EyeOff, Eye, Store, Package, BarChart3, ShieldCheck, Instagram, Linkedin, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { CreatorLogo, LogoVistta, ModalBase } from '../components/SharedUI';
 
@@ -48,6 +49,7 @@ export function AuthScreen() {
     setAuthError('');
     setIsLoggingIn(true);
     try {
+      await verifyRecaptcha(authMode === 'login' ? 'login' : 'register');
       if (authMode === 'login') {
         await signInWithEmailAndPassword(auth, authEmail, authPassword);
       } else {
@@ -78,6 +80,7 @@ export function AuthScreen() {
     setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
     try {
+      await verifyRecaptcha('google_login');
       await signInWithRedirect(auth, provider);
     } catch (error: any) {
       setAuthError(getGoogleErrorMessage(error));

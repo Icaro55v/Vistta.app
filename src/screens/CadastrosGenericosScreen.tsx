@@ -103,7 +103,7 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
                     <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">
                         <button onClick={() => { setItemEditando(item); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[var(--vistta-violet)] hover:bg-[var(--vistta-lavender)]"><Edit2 size={16} /></button>
-                        <button onClick={() => excluirCadastro(collection, item.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                        <button aria-label={`Excluir registro ${item.nome || item.razaoSocial || item.descricao || ''}`} onClick={() => { if (window.confirm('Excluir este registro?')) excluirCadastro(collection, item.id).catch((error: any) => alert(error.message)); }} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                     </div>
                     </td>
                 </tr>

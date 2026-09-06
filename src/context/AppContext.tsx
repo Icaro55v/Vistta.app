@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useRef, ReactNode } from 'react';
 import { getApps, initializeApp } from 'firebase/app';
-import { ref, push, update, remove, onValue, query, limitToLast, runTransaction, get, getDatabase } from 'firebase/database';
+import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get, getDatabase } from 'firebase/database';
 import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, User } from 'firebase/auth';
 import { db, auth, firebaseConfig } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
@@ -9,7 +9,10 @@ const provisioningApp = getApps().find(currentApp => currentApp.name === 'vistta
 const provisioningAuth = getAuth(provisioningApp);
 const provisioningDb = getDatabase(provisioningApp);
 
-export const formatMoney = (v: number | string) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+export const formatMoney = (v: number | string) => {
+  const value = Number(v);
+  return (Number.isFinite(value) ? value : 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+};
 export const toList = <T,>(value: T[] | Record<string, T> | null | undefined): T[] => {
   if (Array.isArray(value)) return value;
   if (value && typeof value === 'object') return Object.values(value);
@@ -63,6 +66,7 @@ interface AppContextType {
   setPdvDesconto: (v: number) => void;
   pdvPagamento: string;
   setPdvPagamento: (p: string) => void;
+  finalizandoVenda: boolean;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -99,6 +103,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [pdvCliente, setPdvCliente] = useState('');
   const [pdvPagamento, setPdvPagamento] = useState('Pix');
   const [pdvDesconto, setPdvDesconto] = useState(0);
+  const [finalizandoVenda, setFinalizandoVenda] = useState(false);
+  const vendaEmProcessamento = useRef(false);
 
   const caixaAberto = useMemo(() => caixas.find(c => c.status === 'aberto'), [caixas]);
   const vendasDoCaixa = useMemo(() => caixaAberto ? vendas.filter(v => v.caixaId === caixaAberto.id) : [], [vendas, caixaAberto]);
@@ -117,10 +123,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (empresaId) return;
     const empresaRef = push(ref(db, 'empresas'));
     if (!empresaRef.key) throw new Error('Não foi possível criar a empresa.');
-    await update(ref(db), {
-      [`empresas/${empresaRef.key}/info`]: { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid },
-      [`users/${user.uid}`]: { empresaId: empresaRef.key, role: 'admin', email: user.email || '' }
-    });
+    const empresaInfo = { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid };
+    await update(ref(db, `empresas/${empresaRef.key}/info`), empresaInfo);
+    try {
+      await update(ref(db, `users/${user.uid}`), { empresaId: empresaRef.key, role: 'admin', email: user.email || '' });
+    } catch (error) {
+      setDatabaseError('A ótica foi criada, mas não foi possível vincular seu usuário. Tente novamente.');
+      throw error;
+    }
   };
 
   const logout = async () => {
@@ -230,6 +240,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!empresaId) return;
     const basePath = `empresas/${empresaId}`;
+    const inicioMes = new Date();
+    inicioMes.setDate(1);
+    inicioMes.setHours(0, 0, 0, 0);
     const collections = [
       { name: 'produtos', setter: setProdutos, queryRef: ref(db, `${basePath}/produtos`) },
       { name: 'clientes', setter: setClientes, queryRef: ref(db, `${basePath}/clientes`) },
@@ -239,7 +252,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { name: 'usuarios', setter: setUsuarios, queryRef: ref(db, `${basePath}/usuarios`) },
       { name: 'orcamentos', setter: setOrcamentos, queryRef: ref(db, `${basePath}/orcamentos`) },
       { name: 'ordensServico', setter: setOrdensServico, queryRef: ref(db, `${basePath}/ordensServico`) },
-      { name: 'vendas', setter: setVendas, queryRef: ref(db, `${basePath}/vendas`) },
+      { name: 'vendas', setter: setVendas, queryRef: query(ref(db, `${basePath}/vendas`), orderByChild('data'), startAt(inicioMes.toISOString())) },
       { name: 'caixas', setter: setCaixas, queryRef: query(ref(db, `${basePath}/caixas`), limitToLast(100)) }
     ];
 
@@ -281,14 +294,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const removeFromCart = (id: string) => setCarrinho(prev => prev.filter(c => c.id !== id));
 
   const abrirCaixa = async (valorInicial: number) => {
-    if (caixaAberto) throw new Error('Já existe um caixa aberto.');
     if (!Number.isFinite(valorInicial) || valorInicial < 0) throw new Error('Informe um valor inicial válido.');
-    await saveRecord('caixas', {
+    const empresa = requireEmpresa();
+    const caixasRef = ref(db, `empresas/${empresa}/caixas`);
+    const novoCaixa = {
       dataAbertura: new Date().toISOString(),
       valorInicial,
       status: 'aberto',
       operador: user?.email || user?.uid || 'Operador'
+    };
+    const resultado = await runTransaction(caixasRef, (atuais) => {
+      const registros = atuais && typeof atuais === 'object' ? Object.values(atuais) : [];
+      if (registros.some((registro: any) => registro?.status === 'aberto')) return;
+      const chave = push(caixasRef).key;
+      return chave ? { ...(atuais || {}), [chave]: novoCaixa } : atuais;
     });
+    if (!resultado.committed) throw new Error('Já existe um caixa aberto.');
   };
 
   const fecharCaixa = async () => {
@@ -303,13 +324,33 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const salvarProduto = (data: Partial<Produto>, id?: string) => saveRecord('produtos', data, id);
+  const salvarProduto = (data: Partial<Produto>, id?: string) => {
+    const produto = {
+      ...data,
+      custo: Number(data.custo),
+      venda: Number(data.venda),
+      qtd: Number(data.qtd),
+      min: Number(data.min)
+    };
+    if (![produto.custo, produto.venda, produto.qtd, produto.min].every(value => Number.isFinite(value) && value >= 0)) {
+      throw new Error('Informe valores numéricos válidos para custo, venda e estoque.');
+    }
+    return saveRecord('produtos', produto, id);
+  };
   const excluirProduto = (id: string) => deleteRecord('produtos', id);
   const salvarCliente = (data: Partial<Cliente>, id?: string) => saveRecord('clientes', data, id);
   const excluirCliente = (id: string) => deleteRecord('clientes', id);
   const salvarCadastro = async (collection: string, data: Record<string, any>, id?: string) => {
     if (collection !== 'usuarios' || id) {
-      await saveRecord(collection, data, id);
+      const normalizedData = collection === 'contas'
+        ? { ...data, valor: Number(data.valor) }
+        : collection === 'fornecedores'
+          ? { ...data, prazoEntrega: data.prazoEntrega === '' ? 0 : Number(data.prazoEntrega) }
+          : data;
+      if (collection === 'contas' && (!Number.isFinite(normalizedData.valor) || normalizedData.valor < 0)) {
+        throw new Error('Informe um valor válido para a conta.');
+      }
+      await saveRecord(collection, normalizedData, id);
       return;
     }
     const empresa = requireEmpresa();
@@ -367,6 +408,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const finalizarVenda = async (comoOrcamento = false) => {
+    if (vendaEmProcessamento.current) return;
     if (carrinho.length === 0 || !empresaId) return alert("Carrinho vazio!");
     if (!comoOrcamento && !caixaAberto) return alert("Abra o caixa primeiro!");
 
@@ -376,6 +418,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     desc = Math.min(desc, subtotal);
     
     const estoqueReservado: CarrinhoItem[] = [];
+    vendaEmProcessamento.current = true;
+    setFinalizandoVenda(true);
     try {
       if (comoOrcamento) {
          if(!pdvCliente) return alert("Selecione um cliente para salvar o orçamento!");
@@ -385,7 +429,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             data: new Date().toISOString(), status: 'pendente'
          });
       } else {
-          const promessasEstoque = carrinho.map(async c => {
+          for (const c of carrinho) {
            const prodRef = ref(db, `empresas/${empresaId}/produtos/${c.id}/qtd`);
             const qtdAntes = await get(prodRef);
             const estoqueAntes = Number(qtdAntes.val());
@@ -402,15 +446,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
              throw new Error(`Não foi possível reservar o estoque de ${c.marca} ${c.modelo}.`);
             }
             estoqueReservado.push(c);
-            return resultado;
-        });
-
-        await Promise.all(promessasEstoque);
+          }
 
         const novaVendaRef = push(ref(db, `empresas/${empresaId}/vendas`));
-        await update(ref(db, `empresas/${empresaId}/vendas/${novaVendaRef.key}`), { 
+          await update(ref(db, `empresas/${empresaId}/vendas/${novaVendaRef.key}`), {
            cliId: pdvCliente, pag: pdvPagamento, subtotal, desconto: desc, 
            total: subtotal - desc, custoBase: custoTotal, itens: carrinho.length, 
+            itensDetalhados: carrinho.map(c => ({ id: c.id, codigo: c.codigo, marca: c.marca, modelo: c.modelo, qtd: c.qtd, venda: Number(c.venda), custo: Number(c.custo) })),
            data: new Date().toISOString(), caixaId: caixaAberto?.id 
         });
       }
@@ -421,6 +463,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         await Promise.all(estoqueReservado.map(item => runTransaction(ref(db, `empresas/${empresaId}/produtos/${item.id}/qtd`), quantidadeAtual => Number(quantidadeAtual || 0) + item.qtd)));
       }
       alert("Erro ao finalizar: " + e.message);
+    } finally {
+      vendaEmProcessamento.current = false;
+      setFinalizandoVenda(false);
     }
   };
 
@@ -430,7 +475,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
     salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, excluirOrcamento, salvarOrdemServico, converterOrcamentoParaOs, registrarLancamentoCaixa,
-    addToCart, removeFromCart, finalizarVenda,
+    addToCart, removeFromCart, finalizarVenda, finalizandoVenda,
     caixaAberto, totalVendasCaixa, pdvCliente, setPdvCliente, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento
   };
 

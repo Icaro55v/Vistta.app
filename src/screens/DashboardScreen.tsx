@@ -13,11 +13,17 @@ export function DashboardScreen() {
   const salesByDay = vendas.reduce<Record<string, number>>((acc, venda) => {
     const date = new Date(venda.data);
     if (Number.isNaN(date.getTime())) return acc;
-    const key = date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', '');
+    const key = date.toISOString().slice(0, 10);
     acc[key] = (acc[key] || 0) + Number(venda.total || 0);
     return acc;
   }, {});
-  const chartEntries = Object.entries(salesByDay).slice(-7);
+  const chartEntries = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date();
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - (6 - index));
+    const key = date.toISOString().slice(0, 10);
+    return [date.toLocaleDateString('pt-BR', { weekday: 'short' }).replace('.', ''), salesByDay[key] || 0] as [string, number];
+  });
   const chartMax = Math.max(...chartEntries.map(([, value]) => value), 1);
   const chartPoints = chartEntries.length > 1
     ? chartEntries.map(([, value], index) => `${(index / (chartEntries.length - 1)) * 100},${100 - (value / chartMax) * 78}`).join(' ')

@@ -6,7 +6,7 @@ export function PdvScreen() {
   const {
     caixaAberto, pdvSearch, setPdvSearch, carrinho, addToCart, removeFromCart,
     pdvCliente, setPdvCliente, clientes, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento,
-    finalizarVenda, setActiveTab, produtos
+    finalizarVenda, finalizandoVenda, setActiveTab, produtos
   } = useAppContext();
   
   const [mobileTab, setMobileTab] = useState('produtos');
@@ -55,7 +55,7 @@ export function PdvScreen() {
              </div>
              <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                {pdvFiltered.map((p) => (
-                 <div key={p.id} onClick={() => addToCart(p)} className="bg-slate-50 border rounded-2xl p-5 cursor-pointer hover:border-[var(--vistta-violet)] transition-all flex flex-col group">
+                 <button type="button" key={p.id} onClick={() => addToCart(p)} className="bg-slate-50 border rounded-2xl p-5 cursor-pointer hover:border-[var(--vistta-violet)] transition-all flex flex-col text-left group">
                    <div className="text-[11px] text-slate-400 font-mono mb-2">{p.codigo}</div>
                    <div className="font-bold text-[15px] group-hover:text-[var(--vistta-violet)]">{p.marca} {p.modelo}</div>
                    <div className="text-[12px] text-slate-500 mb-4">{p.categoria}</div>
@@ -63,7 +63,7 @@ export function PdvScreen() {
                      <span className="font-extrabold text-emerald-600 text-lg">{formatMoney(p.venda)}</span>
                      <span className="text-[11px] bg-white px-2 py-1 rounded-lg font-bold">Est: {p.qtd}</span>
                    </div>
-                 </div>
+                 </button>
                ))}
              </div>
            </div>
@@ -87,7 +87,7 @@ export function PdvScreen() {
                      <div className="text-[12px] text-slate-500 mt-1"><span className="font-bold px-1.5 py-0.5 bg-slate-100 rounded mr-1">{c.qtd}x</span> {formatMoney(c.venda)}</div>
                    </div>
                    <div className="font-extrabold text-[15px] mr-3">{formatMoney(Number(c.venda) * c.qtd)}</div>
-                   <button onClick={() => removeFromCart(c.id)} className="text-slate-300 hover:text-rose-500"><X size={18} /></button>
+                   <button aria-label={`Remover ${c.marca} ${c.modelo} do carrinho`} onClick={() => removeFromCart(c.id)} className="text-slate-300 hover:text-rose-500"><X size={18} /></button>
                  </div>
                ))}
              </div>
@@ -114,10 +114,10 @@ export function PdvScreen() {
                </div>
     
                <div className="grid grid-cols-2 gap-3">
-                  <button onClick={() => finalizarVenda(true)} className="w-full border-2 border-slate-200 py-3.5 rounded-xl font-bold flex items-center justify-center">
+                  <button disabled={finalizandoVenda} onClick={() => finalizarVenda(true)} className="w-full border-2 border-slate-200 py-3.5 rounded-xl font-bold flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50">
                     <FileText size={18} className="mr-2" /> Orçamento
                   </button>
-                  <button onClick={() => finalizarVenda(false)} className="w-full bg-[var(--vistta-plum)] text-white py-3.5 rounded-xl font-bold flex items-center justify-center hover:bg-[var(--vistta-violet)]">
+                  <button disabled={finalizandoVenda} onClick={() => finalizarVenda(false)} className="w-full bg-[var(--vistta-plum)] text-white py-3.5 rounded-xl font-bold flex items-center justify-center hover:bg-[var(--vistta-violet)] disabled:cursor-not-allowed disabled:opacity-50">
                     <Check size={18} className="mr-2" /> Vender
                   </button>
                </div>

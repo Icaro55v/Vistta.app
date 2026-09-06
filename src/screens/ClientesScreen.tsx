@@ -53,7 +53,7 @@ export function ClientesScreen() {
                   <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">
                        <button onClick={() => { setClienteEditando(c); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[var(--vistta-violet)] hover:bg-[var(--vistta-lavender)]"><Edit2 size={16} /></button>
-                       <button onClick={() => excluirCliente(c.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
+                       <button aria-label={`Excluir cliente ${c.nome}`} onClick={() => { if (window.confirm(`Excluir o cliente ${c.nome}?`)) excluirCliente(c.id).catch((error: any) => alert(error.message)); }} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                     </div>
                   </td>
                 </tr>

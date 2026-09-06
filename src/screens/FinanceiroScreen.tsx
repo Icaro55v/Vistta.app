@@ -6,8 +6,8 @@ import { Venda, Cliente } from '../types';
 
 export function FinanceiroScreen() {
   const { vendas, clientes, contas, caixas } = useAppContext();
-  const contasPagar = contas.filter((conta: any) => conta.tipo === 'pagar');
-  const contasReceber = contas.filter((conta: any) => conta.tipo === 'receber');
+  const contasPagar = contas.filter((conta: any) => conta.tipo === 'pagar' && conta.status !== 'pago');
+  const contasReceber = contas.filter((conta: any) => conta.tipo === 'receber' && !['pago', 'recebido'].includes(conta.status));
   const totalPagar = contasPagar.reduce((total: number, conta: any) => total + Number(conta.valor || 0), 0);
   const totalReceber = contasReceber.reduce((total: number, conta: any) => total + Number(conta.valor || 0), 0);
   const totalSaidasCaixa = caixas.reduce((total: number, caixa: any) => total + toList(caixa.lancamentos).filter((item: any) => item.tipo !== 'entrada').reduce((subtotal: number, item: any) => subtotal + Number(item.valor || 0), 0), 0);
