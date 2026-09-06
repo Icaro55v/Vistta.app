@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
 import { ref, update, get } from 'firebase/database';
 import { auth, db } from '../config/firebase';
-import { AlertTriangle, Mail, Lock, EyeOff, Eye, Store, Package, Instagram, Linkedin, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, Mail, Lock, EyeOff, Eye, Store, Package, BarChart3, ShieldCheck, Instagram, Linkedin, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { CreatorLogo, LogoVistta, ModalBase } from '../components/SharedUI';
 
 export function AuthScreen() {
@@ -109,64 +109,65 @@ export function AuthScreen() {
   return (
     <div className="flex min-h-[100dvh] w-full bg-[#fbfaf8] dark:bg-[#171124] text-slate-900 dark:text-white font-sans overflow-hidden">
       {/* Painel Esquerdo (VISTTA) */}
-      <div className="hidden lg:flex w-[55%] bg-[#30204d] flex-col items-center justify-center p-12 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-        <div className="absolute -right-20 top-1/4 w-80 h-80 rounded-full border border-white/10"></div>
-        <div className="absolute right-8 top-1/3 w-48 h-48 rounded-full border border-[#9c4cff]/25"></div>
-         
-         <div className="relative z-10 flex w-full max-w-2xl flex-col items-center text-center">
-            <div className="mb-8 flex flex-col items-center">
-              <div className="mb-4 flex items-center gap-4"><span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[#080a12] p-1.5"><LogoVistta className="h-full w-full" solidWhite={false} /></span><h1 className="font-display text-[44px] font-bold tracking-[0.18em] leading-none text-white">VISTTA</h1></div>
-              <p className="text-[#b99cff] tracking-[0.35em] text-[11px] uppercase font-semibold">Gestão Inteligente para Óticas</p>
-              <div className="w-12 h-[2px] bg-[#9c4cff] mt-6 rounded-full"></div>
-           </div>
+      <div className="hidden lg:flex w-[55%] min-w-0 flex-col items-center justify-start bg-[#110d2b] p-8 pt-12 xl:p-12 xl:pt-20 text-white relative overflow-hidden">
+        <div className="absolute inset-0 opacity-35" style={{ backgroundImage: 'radial-gradient(circle at 20% 15%, rgba(109,74,255,.34), transparent 34%), radial-gradient(circle at 80% 80%, rgba(61,29,132,.3), transparent 38%), linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px)', backgroundSize: '100% 100%, 100% 100%, 40px 40px, 40px 40px' }} />
+        <div className="absolute -right-20 top-1/4 h-80 w-80 rounded-full border border-white/10"></div>
+        <div className="absolute right-8 top-1/3 h-48 w-48 rounded-full border border-[#9c4cff]/25"></div>
 
-           <h2 className="font-display text-[36px] font-medium mb-1 tracking-tight text-white/90">Sua ótica. Uma plataforma.</h2>
-           <h2 className="font-display text-[38px] font-bold text-[#c78cff] mb-5 tracking-tight">Mais controle.</h2>
-           
-           <div className="flex items-start justify-center gap-8 mb-10 w-full">
-              <div className="flex flex-col items-center flex-1 max-w-[180px]">
-                 <Store size={30} className="text-[#9c4cff] mb-4" />
-                 <h3 className="text-[13px] font-semibold mb-2 text-white/90">Gestão Multi-Loja</h3>
-              </div>
-              <div className="w-px h-24 bg-indigo-500/20 mt-4"></div>
-              <div className="flex flex-col items-center flex-1 max-w-[180px]">
-                 <Package size={30} className="text-[#9c4cff] mb-4" />
-                 <h3 className="text-[13px] font-semibold mb-2 text-white/90">Estoque em tempo real</h3>
-              </div>
-           </div>
-         </div>
-         <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="absolute bottom-8 left-8 z-10 flex items-center gap-3 rounded-2xl border border-white/10 bg-black/10 px-3 py-2 transition-colors hover:bg-white/10 sm:left-12">
-           <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-1"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
-           <span className="text-left"><strong className="block text-xs tracking-[.16em] text-white">AXXIS7</strong><small className="block text-[9px] text-white/45">empresa desenvolvedora da VISTTA</small></span>
+        <div className="relative z-10 flex w-full max-w-2xl flex-col">
+          <div className="mb-12 flex items-center gap-4">
+            <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[#080a12] p-1.5"><LogoVistta className="h-full w-full" solidWhite={false} /></span>
+            <div><h1 className="font-display text-[34px] font-bold tracking-[.2em] leading-none text-white xl:text-[40px]">VISTTA</h1><p className="mt-3 text-[9px] font-semibold uppercase tracking-[.28em] text-[#b99cff] xl:text-[10px] xl:tracking-[.32em]">Gestão inteligente para óticas</p></div>
+          </div>
+
+          <div className="mb-10 max-w-xl">
+            <h2 className="font-display text-[34px] font-bold leading-[1.08] tracking-tight text-white xl:text-[42px]">Mais controle.<br /><span className="text-[#b879ff]">Melhores resultados.</span></h2>
+            <div className="mt-5 h-[2px] w-12 bg-[#9c4cff]"></div>
+            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-white/65">A plataforma completa para otimizar a gestão da sua ótica e crescer com eficiência.</p>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 xl:gap-6">
+            {[[Store, 'Gestão multi-loja', 'Centralize e gerencie todas as suas lojas.'], [Package, 'Estoque em tempo real', 'Acompanhe cada produto com precisão instantânea.'], [BarChart3, 'Relatórios inteligentes', 'Insights claros para decisões mais estratégicas.']].map(([Icon, title, description]) => <div key={title as string} className="max-w-[170px]"><Icon size={29} className="mb-4 text-[#914dff]" /><h3 className="mb-2 text-[13px] font-bold text-white">{title as string}</h3><p className="text-[11px] leading-relaxed text-white/55">{description as string}</p></div>)}
+          </div>
+
+          <div className="mt-9 inline-flex w-fit items-center gap-3 rounded-xl border border-[#9c4cff]/30 bg-[#6d4aff]/10 px-4 py-3 text-[12px] font-semibold text-[#caa5ff]"><ShieldCheck size={20} /> Seguro, rápido e feito para óticas.</div>
+        </div>
+         <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="absolute bottom-8 left-8 z-10 flex items-center gap-4 rounded-2xl border border-[#9c4cff]/25 bg-white/[0.06] px-5 py-4 transition-colors hover:border-[#9c4cff]/45 hover:bg-white/[0.1] sm:left-12">
+           <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-1.5"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
+           <span className="flex min-w-0 flex-col justify-center text-left"><small className="mb-0.5 block text-[8px] font-semibold uppercase tracking-[.2em] text-[#c6b0ff]">DESENVOLVIDO POR</small><strong className="block text-sm font-bold tracking-[.16em] text-white">AXXIS7</strong><small className="mt-0.5 block text-[10px] leading-tight text-white/55">empresa desenvolvedora da VISTTA</small></span>
          </a>
       </div>
 
       {/* Formulário Direito */}
-      <div className="flex-1 lg:w-[45%] bg-[#fbfaf8] dark:bg-[#171124] flex flex-col items-center justify-start lg:justify-center p-4 sm:p-6 lg:p-8 relative overflow-y-auto custom-scrollbar">
+      <div className="flex-1 lg:w-[45%] min-w-0 min-h-[100dvh] bg-[#0f0b24] dark:bg-[#0f0b24] flex flex-col items-center justify-start lg:justify-center p-4 pb-8 sm:p-6 lg:p-8 relative overflow-y-auto custom-scrollbar">
         <div className="w-full max-w-[520px]">
-          <div className="bg-white dark:bg-[#211936] rounded-[24px] sm:rounded-[28px] shadow-[0_20px_60px_rgba(48,32,77,.08)] border border-[#e7e1ec] dark:border-[#3d3154] p-5 sm:p-7 lg:p-8 mb-6 w-full">
+          <div className="mb-5 flex items-center gap-3 lg:hidden">
+            <span className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl bg-[#080a12] p-1"><LogoVistta className="h-full w-full" solidWhite={false} /></span>
+            <div><div className="font-display text-lg font-bold tracking-[.18em] text-white">VISTTA</div><div className="text-[8px] font-semibold uppercase tracking-[.2em] text-[#b879ff]">Gestão inteligente para óticas</div></div>
+          </div>
+          <div className="bg-white/[0.055] dark:bg-white/[0.055] rounded-[20px] sm:rounded-[28px] shadow-[0_24px_70px_rgba(0,0,0,.3)] border border-[#8d63ff]/30 p-4 sm:p-7 lg:p-8 mb-6 w-full backdrop-blur-md">
              <div className="text-center mb-8">
-               <div className="inline-flex items-center gap-2 text-[#6d4aff] text-xs font-bold uppercase tracking-[.16em] mb-4"><span className="w-5 h-px bg-[#6d4aff]" /> Acesso seguro</div><h2 className="font-display text-[26px] font-bold mb-2">{authMode === 'login' ? 'Bem-vindo de volta!' : 'Crie sua conta'}</h2>
-               {authMode === 'register' && <p className="text-[15px] text-slate-500">Comece a gerenciar sua ótica de forma inteligente.</p>}
+               <div className="inline-flex items-center gap-2 text-[#b879ff] text-[10px] font-bold uppercase tracking-[.18em] mb-5"><Lock size={13} /> Acesso seguro</div><h2 className="font-display text-[28px] font-bold mb-2 text-white">{authMode === 'login' ? 'Bem-vindo de volta!' : 'Crie sua conta'}</h2>
+               {authMode === 'login' && <p className="text-[14px] text-white/60">Acesse sua conta para continuar.</p>}
+               {authMode === 'register' && <p className="text-[14px] text-white/60">Comece a gerenciar sua ótica de forma inteligente.</p>}
              </div>
              
              <form onSubmit={handleAuth} className="space-y-4">
                {authError && (<div className="bg-rose-50 text-rose-600 p-3.5 rounded-xl text-sm font-bold flex gap-3 border border-rose-100"><AlertTriangle size={18} /><span>{authError}</span></div>)}
                
                <div>
-                 <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">E-mail</label>
+                 <label className="block text-[11px] font-bold text-white/55 uppercase tracking-wider mb-2">E-mail</label>
                  <div className="relative">
                    <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                   <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} className="w-full bg-slate-50 dark:bg-[#2a2140] border border-slate-200 dark:border-[#3d3154] text-slate-900 dark:text-white rounded-xl pl-12 pr-4 py-3.5 outline-none focus:border-[#6d4aff]" placeholder="Seu e-mail" />
+                   <input type="email" required value={authEmail} onChange={e => setAuthEmail(e.target.value)} className="w-full bg-white/[0.06] border border-white/10 text-white placeholder:text-white/35 rounded-xl pl-12 pr-4 py-3.5 outline-none focus:border-[#9c4cff]" placeholder="Seu e-mail" />
                  </div>
                </div>
 
                <div>
-                 <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Senha</label>
+                 <label className="block text-[11px] font-bold text-white/55 uppercase tracking-wider mb-2">Senha</label>
                  <div className="relative">
                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                   <input type={showPassword ? "text" : "password"} required value={authPassword} onChange={e => setAuthPassword(e.target.value)} className="w-full bg-slate-50 dark:bg-[#2a2140] border border-slate-200 dark:border-[#3d3154] text-slate-900 dark:text-white rounded-xl pl-12 pr-12 py-3.5 outline-none focus:border-[#6d4aff]" placeholder="Sua senha" />
+                   <input type={showPassword ? "text" : "password"} required value={authPassword} onChange={e => setAuthPassword(e.target.value)} className="w-full bg-white/[0.06] border border-white/10 text-white placeholder:text-white/35 rounded-xl pl-12 pr-12 py-3.5 outline-none focus:border-[#9c4cff]" placeholder="Sua senha" />
                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400">
                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                    </button>
@@ -174,14 +175,14 @@ export function AuthScreen() {
                </div>
 
                {authMode === 'register' && <div>
-                 <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Confirmar senha</label>
+                 <label className="block text-[11px] font-bold text-white/55 uppercase tracking-wider mb-2">Confirmar senha</label>
                  <div className="relative">
                    <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-                   <input type={showPassword ? 'text' : 'password'} required value={authConfirmPassword} onChange={e => setAuthConfirmPassword(e.target.value)} className="w-full bg-slate-50 dark:bg-[#2a2140] border border-slate-200 dark:border-[#3d3154] text-slate-900 dark:text-white rounded-xl pl-12 pr-4 py-3.5 outline-none focus:border-[#6d4aff]" placeholder="Confirme sua senha" />
+                   <input type={showPassword ? 'text' : 'password'} required value={authConfirmPassword} onChange={e => setAuthConfirmPassword(e.target.value)} className="w-full bg-white/[0.06] border border-white/10 text-white placeholder:text-white/35 rounded-xl pl-12 pr-4 py-3.5 outline-none focus:border-[#9c4cff]" placeholder="Confirme sua senha" />
                  </div>
                </div>}
 
-               {authMode === 'register' && <label className="flex items-start gap-2 text-[13px] text-slate-500">
+               {authMode === 'register' && <label className="flex items-start gap-2 text-[13px] text-white/55">
                  <input type="checkbox" checked={acceptedTerms} onChange={e => setAcceptedTerms(e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#6d4aff]" />
                  <span>Aceito os <button type="button" onClick={() => setLegalDocument('terms')} className="font-semibold text-[#6d4aff] hover:underline">Termos de Uso</button> e a <button type="button" onClick={() => setLegalDocument('privacy')} className="font-semibold text-[#6d4aff] hover:underline">Política de Privacidade</button>.</span>
                </label>}
@@ -190,9 +191,9 @@ export function AuthScreen() {
                  {isLoggingIn ? 'Aguarde...' : (authMode === 'login' ? 'Entrar' : 'Criar minha conta')}
                </button>
 
-               <div className="my-5 flex items-center gap-3"><div className="h-px flex-1 bg-slate-200"></div><span className="text-xs font-medium text-slate-400">ou</span><div className="h-px flex-1 bg-slate-200"></div></div>
+               <div className="my-5 flex items-center gap-3"><div className="h-px flex-1 bg-white/15"></div><span className="text-xs font-medium text-white/45">ou</span><div className="h-px flex-1 bg-white/15"></div></div>
 
-                 <button type="button" onClick={handleGoogleLogin} disabled={isLoggingIn} className="w-full border border-[#e7e1ec] dark:border-slate-700 bg-white dark:bg-slate-800 py-3.5 rounded-xl font-bold flex items-center justify-center gap-3 mt-4 text-slate-700 dark:text-slate-200 hover:bg-[#fbfaf8] dark:hover:bg-slate-700 disabled:opacity-60 transition-colors">
+                 <button type="button" onClick={handleGoogleLogin} disabled={isLoggingIn} className="w-full border border-white/10 bg-white/[0.06] py-3.5 rounded-xl font-bold flex items-center justify-center gap-3 mt-4 text-white/85 hover:bg-white/10 disabled:opacity-60 transition-colors">
                  <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
@@ -218,34 +219,43 @@ export function AuthScreen() {
 }
 
 function LoginFooter({ onLegalOpen }: { onLegalOpen: (document: 'terms' | 'privacy') => void }) {
+  const supportEmail = 'mailto:icaroprojetos7@gmail.com?subject=Suporte%20VISTTA&body=Ol%C3%A1%2C%20preciso%20de%20ajuda%20com%20o%20VISTTA.%0A%0ADescreva%20sua%20d%C3%BAvida%20ou%20problema%3A';
+  const instagramUrl = 'https://www.instagram.com/aaxxis7/';
+  const linkedinUrl = 'https://www.linkedin.com/in/7icaaro';
+
   return (
     <footer className="w-full pb-4 text-[10px] text-slate-500 dark:text-slate-400">
       <div className="grid grid-cols-2 gap-x-6 gap-y-7 border-t border-[#e7e1ec] dark:border-[#3d3154] pt-6 sm:grid-cols-4 sm:gap-x-5">
         <div>
           <h3 className="mb-3 min-h-4 text-[10px] font-bold text-slate-900 dark:text-white">Navegação</h3>
-          <div className="space-y-2"><a href="#recursos" className="block hover:text-[#6d4aff]">Recursos</a><a href="#faq" className="block hover:text-[#6d4aff]">FAQ</a><a href="mailto:icaroprojetos7@gmail.com" className="block hover:text-[#6d4aff]">Fale conosco</a></div>
+          <div className="space-y-2.5"><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">Dashboard</strong><small className="block text-[9px] text-slate-400">Visão geral da ótica</small></span><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">Caixa diário</strong><small className="block text-[9px] text-slate-400">Abertura e fechamento</small></span><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">Clientes e estoque</strong><small className="block text-[9px] text-slate-400">Cadastros e inventário</small></span><a href={supportEmail} className="block hover:text-[#6d4aff]">Fale conosco</a></div>
         </div>
         <div>
           <h3 className="mb-3 min-h-4 text-[10px] font-bold text-slate-900 dark:text-white">Legal</h3>
-          <div className="space-y-2"><button type="button" onClick={() => onLegalOpen('terms')} className="block text-left hover:text-[#6d4aff]">Termos de uso</button><button type="button" onClick={() => onLegalOpen('privacy')} className="block text-left hover:text-[#6d4aff]">Política de privacidade</button><a href="mailto:icaroprojetos7@gmail.com?subject=Exclusão%20de%20conta" className="block hover:text-[#6d4aff]">Exclusão de conta</a></div>
+          <div className="space-y-2.5"><button type="button" onClick={() => onLegalOpen('terms')} className="block text-left hover:text-[#6d4aff]"><strong className="font-medium">Termos de uso</strong><small className="block text-[9px] text-slate-400">Regras da plataforma</small></button><button type="button" onClick={() => onLegalOpen('privacy')} className="block text-left hover:text-[#6d4aff]"><strong className="font-medium">Política de privacidade</strong><small className="block text-[9px] text-slate-400">Proteção dos seus dados</small></button><a href="mailto:icaroprojetos7@gmail.com?subject=Exclusão%20de%20conta" className="block hover:text-[#6d4aff]"><strong className="font-medium">Exclusão de conta</strong><small className="block text-[9px] text-slate-400">Solicite pelo suporte</small></a></div>
         </div>
         <div>
           <h3 className="mb-3 min-h-4 text-[10px] font-bold text-slate-900 dark:text-white">Produto</h3>
-          <div className="space-y-2"><span className="block">PDV e vendas</span><span className="block">Estoque inteligente</span><span className="block">Financeiro integrado</span></div>
+          <div className="space-y-2.5"><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">PDV e vendas</strong><small className="block text-[9px] text-slate-400">Venda com agilidade</small></span><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">Orçamentos e OS</strong><small className="block text-[9px] text-slate-400">Serviços sob controle</small></span><span className="block"><strong className="font-medium text-slate-700 dark:text-slate-300">Financeiro e DRE</strong><small className="block text-[9px] text-slate-400">Resultados da operação</small></span></div>
         </div>
         <div>
-          <h3 className="mb-3 min-h-4 text-[10px] font-bold text-slate-900 dark:text-white">Status</h3>
+          <h3 className="mb-3 min-h-4 text-[10px] font-bold text-slate-900 dark:text-white">Status e suporte</h3>
           <div className="mb-3 flex items-center gap-1.5 text-emerald-600 dark:text-[#c6ed76]"><CheckCircle2 size={12} /> Operacional</div>
-          <p className="leading-relaxed">VISTTA por AXXIS7</p>
+          <p className="mb-3 leading-relaxed">Dados sincronizados em tempo real</p>
+          <div className="space-y-2">
+            <a href={supportEmail} className="block hover:text-[#6d4aff]"><strong className="font-medium">Gmail</strong><small className="block break-all text-[9px] text-slate-400">icaroprojetos7@gmail.com</small></a>
+            <a href={instagramUrl} target="_blank" rel="noreferrer" className="block hover:text-[#d62976]"><strong className="font-medium">Instagram</strong><small className="block text-[9px] text-slate-400">Acompanhe a AXXIS7</small></a>
+            <a href={linkedinUrl} target="_blank" rel="noreferrer" className="block hover:text-[#0a66c2]"><strong className="font-medium">LinkedIn</strong><small className="block text-[9px] text-slate-400">Perfil profissional</small></a>
+          </div>
         </div>
       </div>
       <div className="mt-7 flex flex-col gap-4 border-t border-[#e7e1ec] pt-5 dark:border-[#3d3154] sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-[280px] leading-relaxed">© 2026 VISTTA. Sistema de gestão para óticas. Todos os direitos reservados.</p>
         <div className="flex items-center gap-2">
-          <span className="mr-1 text-[10px] font-bold text-slate-900 dark:text-white">Redes sociais</span>
-          <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Instagram da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2ea52b] text-white transition-transform hover:scale-105"><Instagram size={18} /></a>
-          <a href="https://www.linkedin.com/in/7icaaro" target="_blank" rel="noreferrer" aria-label="LinkedIn da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#2377b5] text-white transition-transform hover:scale-105"><Linkedin size={18} /></a>
-          <a href="mailto:icaroprojetos7@gmail.com" aria-label="Enviar e-mail para o suporte" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#30204d] text-white transition-transform hover:scale-105"><ArrowUpRight size={18} /></a>
+          <span className="mr-1 text-[10px] font-bold text-slate-900 dark:text-white">Fale com a AXXIS7</span>
+          <a href={instagramUrl} target="_blank" rel="noreferrer" aria-label="Abrir Instagram da AXXIS7" title="Instagram da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d62976] text-white transition-transform hover:scale-105"><Instagram size={18} /></a>
+          <a href={linkedinUrl} target="_blank" rel="noreferrer" aria-label="Abrir LinkedIn da AXXIS7" title="LinkedIn da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0a66c2] text-white transition-transform hover:scale-105"><Linkedin size={18} /></a>
+          <a href={supportEmail} aria-label="Enviar e-mail para o suporte" title="Enviar e-mail para o suporte" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#30204d] text-white transition-transform hover:scale-105"><ArrowUpRight size={18} /></a>
         </div>
       </div>
       <p className="mt-4 text-center text-[9px] text-slate-400">Desenvolvido e mantido por AXXIS7</p>

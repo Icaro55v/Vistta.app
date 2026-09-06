@@ -59,7 +59,7 @@ export function ModalBase({ open, onClose, title, width = "max-w-md", children }
 }
 
 export function LogoVistta({ className = "", solidWhite = false }: { className?: string, solidWhite?: boolean }) {
-  return <img src="/vistta-logo.png" className={className} aria-label="Logo VISTTA" alt="Logo VISTTA" loading="eager" decoding="async" draggable="false" />;
+  return <img src="/assets/logos/vistta-logo.png" className={`object-contain ${className}`} aria-label="Logo VISTTA" alt="Logo VISTTA" loading="eager" decoding="async" draggable="false" />;
 }
 
 export function CreatorLogo({ className = "", solidWhite = false }: { className?: string, solidWhite?: boolean }) {

@@ -15,7 +15,7 @@ import { OrdensServicoScreen } from './screens/OrdensServicoScreen';
 import { HelpScreen } from './screens/HelpScreen';
 import { SetupOticaScreen } from './screens/SetupOticaScreen';
 import { Home, ShoppingCart, Boxes, Users, Menu, Moon, Sun, LogOut } from 'lucide-react';
-import { CreatorLogo } from './components/SharedUI';
+import { LogoVistta } from './components/SharedUI';
 
 function MainLayout() {
   const { activeTab, user, loadingAuth, setActiveTab, carrinho, userRole, dadosEmpresa, empresaId, databaseError, logout } = useAppContext();
@@ -43,7 +43,7 @@ function MainLayout() {
           <div className="vistta-loading-mark relative flex h-32 w-32 items-center justify-center sm:h-40 sm:w-40">
             <span className="vistta-loading-ring vistta-loading-ring-one" />
             <span className="vistta-loading-ring vistta-loading-ring-two" />
-            <span className="relative z-10 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-2 shadow-[0_0_28px_rgba(93,78,255,.22)] sm:h-24 sm:w-24"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
+            <span className="relative z-10 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-2 shadow-[0_0_28px_rgba(93,78,255,.22)] sm:h-24 sm:w-24"><LogoVistta className="h-full w-full" solidWhite={false} /></span>
           </div>
           <div className="mt-5 flex items-center gap-1.5" aria-label="Carregando">
             <span className="vistta-loading-dot" />
