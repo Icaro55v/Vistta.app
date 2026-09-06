@@ -16,6 +16,15 @@ npm run build
 npm run preview
 ```
 
+Backend transacional:
+
+```bash
+npm run build:all
+npx firebase-tools deploy --only functions,database
+```
+
+As funções `finalizeSale`, `openCash`, `closeCash` e `addCashEntry` exigem usuário autenticado e validam a empresa pelo perfil em `users/{uid}`. O deploy requer Node 20 no ambiente do Firebase; o container local pode emitir apenas um aviso se estiver usando outra versão.
+
 ## Variáveis de ambiente
 
 Crie um arquivo `.env` local com as variáveis `VITE_FIREBASE_*` usadas em `src/config/firebase.ts`. O arquivo `.env` não deve ser versionado. As chaves web do Firebase devem ter restrições de domínio configuradas no Google Cloud Console.

@@ -2,7 +2,8 @@ import React, { createContext, useContext, useState, useEffect, useMemo, useRef,
 import { getApps, initializeApp } from 'firebase/app';
 import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get, getDatabase } from 'firebase/database';
 import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, User } from 'firebase/auth';
-import { db, auth, firebaseConfig } from '../config/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { db, auth, firebaseConfig, functions } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
 
 const provisioningApp = getApps().find(currentApp => currentApp.name === 'vistta-user-provisioning') || initializeApp(firebaseConfig, 'vistta-user-provisioning');
@@ -295,33 +296,13 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const abrirCaixa = async (valorInicial: number) => {
     if (!Number.isFinite(valorInicial) || valorInicial < 0) throw new Error('Informe um valor inicial válido.');
-    const empresa = requireEmpresa();
-    const caixasRef = ref(db, `empresas/${empresa}/caixas`);
-    const novoCaixa = {
-      dataAbertura: new Date().toISOString(),
-      valorInicial,
-      status: 'aberto',
-      operador: user?.email || user?.uid || 'Operador'
-    };
-    const resultado = await runTransaction(caixasRef, (atuais) => {
-      const registros = atuais && typeof atuais === 'object' ? Object.values(atuais) : [];
-      if (registros.some((registro: any) => registro?.status === 'aberto')) return;
-      const chave = push(caixasRef).key;
-      return chave ? { ...(atuais || {}), [chave]: novoCaixa } : atuais;
-    });
-    if (!resultado.committed) throw new Error('Já existe um caixa aberto.');
+    await httpsCallable(functions, 'openCash')({ valorInicial });
   };
 
   const fecharCaixa = async () => {
     const caixa = caixaAberto;
     if (!caixa) throw new Error('Nenhum caixa aberto.');
-    const totalLancamentos = toList(caixa.lancamentos).reduce((total, item) => total + (item.tipo === 'entrada' ? Number(item.valor) : -Number(item.valor)), 0);
-    await update(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}`), {
-      status: 'fechado',
-      dataFechamento: new Date().toISOString(),
-      totalVendas: totalVendasCaixa,
-      valorFinal: Number(caixa.valorInicial || 0) + totalVendasCaixa + totalLancamentos
-    });
+    await httpsCallable(functions, 'closeCash')({ caixaId: caixa.id });
   };
 
   const salvarProduto = (data: Partial<Produto>, id?: string) => {
@@ -400,11 +381,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const caixa = caixaAberto;
     if (!caixa) throw new Error('Abra o caixa antes de registrar um lançamento.');
     if (!Number.isFinite(data.valor) || data.valor <= 0) throw new Error('Informe um valor válido.');
-    await push(ref(db, `empresas/${requireEmpresa()}/caixas/${caixa.id}/lancamentos`), {
-      ...data,
-      data: new Date().toISOString(),
-      operador: user?.email || user?.uid || 'Operador'
-    });
+    await httpsCallable(functions, 'addCashEntry')({ caixaId: caixa.id, ...data });
   };
 
   const finalizarVenda = async (comoOrcamento = false) => {
@@ -429,32 +406,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             data: new Date().toISOString(), status: 'pendente'
          });
       } else {
-          for (const c of carrinho) {
-           const prodRef = ref(db, `empresas/${empresaId}/produtos/${c.id}/qtd`);
-            const qtdAntes = await get(prodRef);
-            const estoqueAntes = Number(qtdAntes.val());
-            if (!qtdAntes.exists() || !Number.isFinite(estoqueAntes) || estoqueAntes < c.qtd) {
-             throw new Error(`Estoque insuficiente para ${c.marca} ${c.modelo}.`);
-            }
-            const resultado = await runTransaction(prodRef, (qtdAtual) => {
-              if (qtdAtual === null) return qtdAtual;
-              const novaQtd = Number(qtdAtual) - c.qtd;
-              return novaQtd >= 0 ? novaQtd : qtdAtual;
-           });
-            const estoqueDepois = Number(resultado.snapshot.val());
-            if (!resultado.committed || estoqueDepois !== estoqueAntes - c.qtd) {
-             throw new Error(`Não foi possível reservar o estoque de ${c.marca} ${c.modelo}.`);
-            }
-            estoqueReservado.push(c);
-          }
-
-        const novaVendaRef = push(ref(db, `empresas/${empresaId}/vendas`));
-          await update(ref(db, `empresas/${empresaId}/vendas/${novaVendaRef.key}`), {
-           cliId: pdvCliente, pag: pdvPagamento, subtotal, desconto: desc, 
-           total: subtotal - desc, custoBase: custoTotal, itens: carrinho.length, 
-            itensDetalhados: carrinho.map(c => ({ id: c.id, codigo: c.codigo, marca: c.marca, modelo: c.modelo, qtd: c.qtd, venda: Number(c.venda), custo: Number(c.custo) })),
-           data: new Date().toISOString(), caixaId: caixaAberto?.id 
-        });
+          const requestId = crypto.randomUUID();
+          await httpsCallable(functions, 'finalizeSale')({
+            requestId,
+            cliId: pdvCliente,
+            pag: pdvPagamento,
+            desconto: desc,
+            items: carrinho.map(c => ({ id: c.id, codigo: c.codigo, marca: c.marca, modelo: c.modelo, qtd: c.qtd, venda: Number(c.venda), custo: Number(c.custo) }))
+          });
       }
       setCarrinho([]); setPdvDesconto(0); setPdvCliente('');
       alert(comoOrcamento ? "Orçamento salvo!" : "Venda concluída com sucesso!");

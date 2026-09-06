@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:functions": "npm run build --prefix functions",
+    "build:all": "npm run build:functions && npm run build",
     "preview": "vite preview"
   },
   "dependencies": {
