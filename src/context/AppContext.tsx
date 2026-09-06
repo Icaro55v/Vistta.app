@@ -313,6 +313,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     const empresa = requireEmpresa();
+    if (!user) throw new Error('Usuário não autenticado. Entre novamente.');
     if (userRole !== 'admin') throw new Error('Somente administradores podem criar usuários.');
     const email = String(data.email || '').trim().toLowerCase();
     if (!email) throw new Error('Informe o e-mail do usuário.');
