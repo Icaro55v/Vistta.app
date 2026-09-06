@@ -87,8 +87,12 @@ export function AuthScreen() {
   };
 
   function getGoogleErrorMessage(error: any) {
+    const errorMessage = String(error?.message || '').toLowerCase();
     if (error?.code === 'auth/unauthorized-domain') {
       return `Domínio não autorizado: ${window.location.hostname}. No Firebase Console, abra Authentication > Settings > Authorized domains e adicione este domínio.`;
+    }
+    if (error?.code === 'auth/invalid-api-key' || errorMessage.includes('api_key_http_referrer_blocked') || errorMessage.includes('requests from referer')) {
+      return 'A API key do Firebase bloqueou este domínio. No Google Cloud Console, abra APIs e serviços > Credenciais, edite a chave do projeto vistta-2e1df e autorize o domínio atual. Depois, publique o build novamente.';
     }
     if (error?.code === 'auth/popup-blocked') return 'O pop-up foi bloqueado. O login será redirecionado.';
     if (error?.code === 'auth/popup-closed-by-user') return 'O login do Google foi cancelado.';
