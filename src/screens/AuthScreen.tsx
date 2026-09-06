@@ -131,6 +131,17 @@ export function AuthScreen() {
           </div>
 
           <div className="mt-9 inline-flex w-fit items-center gap-3 rounded-xl border border-[#9c4cff]/30 bg-[#6d4aff]/10 px-4 py-3 text-[12px] font-semibold text-[#caa5ff]"><ShieldCheck size={20} /> Seguro, rápido e feito para óticas.</div>
+
+          <div className="mt-5 max-w-md rounded-2xl border border-white/10 bg-white/[0.055] p-5 backdrop-blur-sm">
+            <p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#b879ff]">Dentro do VISTTA</p>
+            <h3 className="mt-1 font-display text-lg font-bold text-white">Tudo o que sua ótica precisa em um só lugar</h3>
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-white/10 pt-4 text-[10px] text-white/65">
+              <span className="flex items-start gap-1.5"><CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#c6ed76]" /><span><strong className="block font-semibold text-white/85">Vendas e PDV</strong>Atendimento mais ágil</span></span>
+              <span className="flex items-start gap-1.5"><CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#c6ed76]" /><span><strong className="block font-semibold text-white/85">Estoque</strong>Produtos sempre organizados</span></span>
+              <span className="flex items-start gap-1.5"><CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#c6ed76]" /><span><strong className="block font-semibold text-white/85">Clientes e OS</strong>Histórico e serviços</span></span>
+              <span className="flex items-start gap-1.5"><CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#c6ed76]" /><span><strong className="block font-semibold text-white/85">Financeiro</strong>Controle e resultados</span></span>
+            </div>
+          </div>
         </div>
          <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="absolute bottom-8 left-8 z-10 flex items-center gap-4 rounded-2xl border border-[#9c4cff]/25 bg-white/[0.06] px-5 py-4 transition-colors hover:border-[#9c4cff]/45 hover:bg-white/[0.1] sm:left-12">
            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-1.5"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
