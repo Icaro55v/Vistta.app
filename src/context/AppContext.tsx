@@ -332,6 +332,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       await saveRecord('usuarios', { ...data, email, authUid: criado.uid, status: 'convite_enviado', criadoEm: new Date().toISOString() });
       await signOut(provisioningAuth);
     } catch (error: any) {
+      if (criado) await remove(ref(provisioningDb, `users/${criado.uid}`)).catch(() => undefined);
       if (criado) await criado.delete().catch(() => undefined);
       await signOut(provisioningAuth).catch(() => undefined);
       throw new Error(error?.code === 'auth/email-already-in-use' ? 'Este e-mail já possui uma conta.' : error?.message || 'Não foi possível criar o usuário.');
