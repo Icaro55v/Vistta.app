@@ -142,6 +142,15 @@ export function AuthScreen() {
               <span className="flex items-start gap-1.5"><CheckCircle2 size={12} className="mt-0.5 shrink-0 text-[#c6ed76]" /><span><strong className="block font-semibold text-white/85">Financeiro</strong>Controle e resultados</span></span>
             </div>
           </div>
+
+          <div className="mt-5 max-w-md rounded-2xl border border-[#9c4cff]/20 bg-[#6d4aff]/[0.07] p-5">
+            <div className="flex items-center justify-between gap-4"><div><p className="text-[10px] font-bold uppercase tracking-[.18em] text-[#b879ff]">Uma rotina mais inteligente</p><h3 className="mt-1 font-display text-base font-bold text-white">Da operação à decisão</h3></div><span className="rounded-full border border-[#c6ed76]/30 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#c6ed76]">VISTTA</span></div>
+            <div className="mt-4 grid grid-cols-3 gap-3 border-t border-white/10 pt-4">
+              <div><span className="mb-2 block font-display text-xl font-bold text-[#b879ff]">01</span><strong className="block text-[10px] text-white/85">Centralize</strong><p className="mt-1 text-[9px] leading-relaxed text-white/50">Reúna os dados da ótica.</p></div>
+              <div><span className="mb-2 block font-display text-xl font-bold text-[#b879ff]">02</span><strong className="block text-[10px] text-white/85">Acompanhe</strong><p className="mt-1 text-[9px] leading-relaxed text-white/50">Tenha a operação sob controle.</p></div>
+              <div><span className="mb-2 block font-display text-xl font-bold text-[#b879ff]">03</span><strong className="block text-[10px] text-white/85">Decida</strong><p className="mt-1 text-[9px] leading-relaxed text-white/50">Use informações para crescer.</p></div>
+            </div>
+          </div>
         </div>
          <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="absolute bottom-8 left-8 z-10 flex items-center gap-4 rounded-2xl border border-[#9c4cff]/25 bg-white/[0.06] px-5 py-4 transition-colors hover:border-[#9c4cff]/45 hover:bg-white/[0.1] sm:left-12">
            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-1.5"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
@@ -263,7 +272,7 @@ function LoginFooter({ onLegalOpen }: { onLegalOpen: (document: 'terms' | 'priva
       <div className="mt-7 flex flex-col gap-4 border-t border-[#e7e1ec] pt-5 dark:border-[#3d3154] sm:flex-row sm:items-center sm:justify-between">
         <p className="max-w-[280px] leading-relaxed">© 2026 VISTTA. Sistema de gestão para óticas. Todos os direitos reservados.</p>
         <div className="flex items-center gap-2">
-          <span className="mr-1 text-[10px] font-bold text-slate-900 dark:text-white">Fale com a AXXIS7</span>
+          <span className="mr-1 text-[10px] font-bold text-white">Fale com a AXXIS7</span>
           <a href={instagramUrl} target="_blank" rel="noreferrer" aria-label="Abrir Instagram da AXXIS7" title="Instagram da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#d62976] text-white transition-transform hover:scale-105"><Instagram size={18} /></a>
           <a href={linkedinUrl} target="_blank" rel="noreferrer" aria-label="Abrir LinkedIn da AXXIS7" title="LinkedIn da AXXIS7" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#0a66c2] text-white transition-transform hover:scale-105"><Linkedin size={18} /></a>
           <a href={supportEmail} aria-label="Enviar e-mail para o suporte" title="Enviar e-mail para o suporte" className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#30204d] text-white transition-transform hover:scale-105"><ArrowUpRight size={18} /></a>
