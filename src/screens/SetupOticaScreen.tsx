@@ -21,7 +21,11 @@ export function SetupOticaScreen() {
     try {
       await configurarOtica(nomeNormalizado);
     } catch (error: any) {
-      setErro(error?.message || 'Não foi possível salvar os dados da ótica.');
+      if (error?.code === 'PERMISSION_DENIED' || error?.message === 'PERMISSION_DENIED') {
+        setErro('O Firebase recusou o cadastro. Publique o arquivo database.rules.json no projeto vistta-2e1df e tente novamente.');
+      } else {
+        setErro(error?.message || 'Não foi possível salvar os dados da ótica.');
+      }
     } finally {
       setSalvando(false);
     }
