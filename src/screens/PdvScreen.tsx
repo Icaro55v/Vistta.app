@@ -37,7 +37,7 @@ export function PdvScreen() {
            <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center text-rose-500 mb-6"><Lock className="w-10 h-10"/></div>
            <h2 className="text-2xl font-bold mb-3">O Caixa está Fechado</h2>
            <p className="text-slate-500 mb-8 max-w-md">Para garantir a segurança financeira, é obrigatório abrir o caixa do dia antes de registrar qualquer venda.</p>
-           <button onClick={() => setActiveTab('caixa')} className="bg-[#4A3AFF] text-white px-8 py-3.5 rounded-xl font-bold">Ir para o Controle de Caixa</button>
+           <button onClick={() => setActiveTab('caixa')} className="bg-[var(--vistta-plum)] text-white px-8 py-3.5 rounded-xl font-bold hover:bg-[var(--vistta-violet)]">Ir para o Controle de Caixa</button>
          </div>
       ) : (
          <div className="flex-1 flex flex-col lg:flex-row gap-6">
@@ -50,14 +50,14 @@ export function PdvScreen() {
                  placeholder="Buscar por marca, modelo ou código..."
                  value={pdvSearch}
                  onChange={(e) => setPdvSearch(e.target.value)}
-                 className="w-full bg-slate-50 border rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:border-[#4A3AFF]"
+                 className="w-full bg-slate-50 border rounded-2xl pl-12 pr-4 py-3.5 outline-none focus:border-[var(--vistta-violet)]"
                />
              </div>
              <div className="flex-1 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
                {pdvFiltered.map((p) => (
-                 <div key={p.id} onClick={() => addToCart(p)} className="bg-slate-50 border rounded-2xl p-5 cursor-pointer hover:border-[#4A3AFF] transition-all flex flex-col group">
+                 <div key={p.id} onClick={() => addToCart(p)} className="bg-slate-50 border rounded-2xl p-5 cursor-pointer hover:border-[var(--vistta-violet)] transition-all flex flex-col group">
                    <div className="text-[11px] text-slate-400 font-mono mb-2">{p.codigo}</div>
-                   <div className="font-bold text-[15px] group-hover:text-[#4A3AFF]">{p.marca} {p.modelo}</div>
+                   <div className="font-bold text-[15px] group-hover:text-[var(--vistta-violet)]">{p.marca} {p.modelo}</div>
                    <div className="text-[12px] text-slate-500 mb-4">{p.categoria}</div>
                    <div className="mt-auto flex justify-between items-end">
                      <span className="font-extrabold text-emerald-600 text-lg">{formatMoney(p.venda)}</span>
@@ -73,7 +73,7 @@ export function PdvScreen() {
              <h3 className="font-bold text-xl mb-5">Carrinho</h3>
              <div className="mb-5">
                <label className="block text-[12px] font-bold text-slate-500 uppercase mb-2">Cliente Vinculado</label>
-               <select value={pdvCliente} onChange={(e)=>setPdvCliente(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[#4A3AFF]">
+               <select value={pdvCliente} onChange={(e)=>setPdvCliente(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[var(--vistta-violet)]">
                  <option value="">Consumidor Final (Balcão)</option>
                  {clientes.map(c => <option key={c.id} value={c.id}>{c.nome}</option>)}
                </select>
@@ -96,11 +96,11 @@ export function PdvScreen() {
                <div className="grid grid-cols-2 gap-4 mb-6">
                  <div>
                    <label className="block text-[11px] font-bold text-slate-400 uppercase mb-2">Desc (R$)</label>
-                   <input type="number" min="0" value={pdvDesconto} onChange={(e)=>setPdvDesconto(Number(e.target.value))} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[#4A3AFF]" />
+                   <input type="number" min="0" value={pdvDesconto} onChange={(e)=>setPdvDesconto(Number(e.target.value))} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[var(--vistta-violet)]" />
                  </div>
                  <div>
                    <label className="block text-[11px] font-bold text-slate-400 uppercase mb-2">Pagamento</label>
-                   <select value={pdvPagamento} onChange={(e)=>setPdvPagamento(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[#4A3AFF]">
+                   <select value={pdvPagamento} onChange={(e)=>setPdvPagamento(e.target.value)} className="w-full bg-slate-50 border rounded-xl px-4 py-3 outline-none focus:border-[var(--vistta-violet)]">
                      <option>Pix</option><option>Crédito</option><option>Débito</option><option>Dinheiro</option>
                    </select>
                  </div>
@@ -108,7 +108,7 @@ export function PdvScreen() {
                
                <div className="flex justify-between items-end mb-6">
                  <span className="font-bold text-slate-500 text-[15px]">Total Geral</span>
-                 <span className="text-4xl font-black text-[#4A3AFF]">
+                 <span className="text-4xl font-black text-[var(--vistta-violet)]">
                    {formatMoney(Math.max(0, carrinho.reduce((a,b)=>a+(Number(b.venda)*b.qtd),0) - (Number(pdvDesconto)||0)))}
                  </span>
                </div>
@@ -117,7 +117,7 @@ export function PdvScreen() {
                   <button onClick={() => finalizarVenda(true)} className="w-full border-2 border-slate-200 py-3.5 rounded-xl font-bold flex items-center justify-center">
                     <FileText size={18} className="mr-2" /> Orçamento
                   </button>
-                  <button onClick={() => finalizarVenda(false)} className="w-full bg-[#4A3AFF] text-white py-3.5 rounded-xl font-bold flex items-center justify-center">
+                  <button onClick={() => finalizarVenda(false)} className="w-full bg-[var(--vistta-plum)] text-white py-3.5 rounded-xl font-bold flex items-center justify-center hover:bg-[var(--vistta-violet)]">
                     <Check size={18} className="mr-2" /> Vender
                   </button>
                </div>

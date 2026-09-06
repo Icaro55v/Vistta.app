@@ -1,8 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useMemo, ReactNode } from 'react';
-import { ref, push, update, remove, onValue, query, limitToLast, orderByChild, startAt, runTransaction, get } from 'firebase/database';
-import { onAuthStateChanged, signOut, User } from 'firebase/auth';
-import { db, auth } from '../config/firebase';
+import { getApps, initializeApp } from 'firebase/app';
+import { ref, push, update, remove, onValue, query, limitToLast, runTransaction, get, getDatabase } from 'firebase/database';
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendPasswordResetEmail, signOut, User } from 'firebase/auth';
+import { db, auth, firebaseConfig } from '../config/firebase';
 import { Produto, Cliente, Venda, Caixa, CarrinhoItem, Orcamento, OrdemServico } from '../types';
+
+const provisioningApp = getApps().find(currentApp => currentApp.name === 'vistta-user-provisioning') || initializeApp(firebaseConfig, 'vistta-user-provisioning');
+const provisioningAuth = getAuth(provisioningApp);
+const provisioningDb = getDatabase(provisioningApp);
 
 export const formatMoney = (v: number | string) => Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 export const toList = <T,>(value: T[] | Record<string, T> | null | undefined): T[] => {
@@ -43,6 +48,7 @@ interface AppContextType {
   excluirCliente: (id: string) => Promise<void>;
   salvarCadastro: (collection: string, data: Record<string, any>, id?: string) => Promise<void>;
   excluirCadastro: (collection: string, id: string) => Promise<void>;
+  excluirOrcamento: (id: string) => Promise<void>;
   salvarOrdemServico: (data: Partial<OrdemServico>, id?: string) => Promise<void>;
   converterOrcamentoParaOs: (orcamento: Orcamento) => Promise<void>;
   registrarLancamentoCaixa: (data: { tipo: 'entrada' | 'saida' | 'sangria'; descricao: string; valor: number }) => Promise<void>;
@@ -111,8 +117,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     if (empresaId) return;
     const empresaRef = push(ref(db, 'empresas'));
     if (!empresaRef.key) throw new Error('Não foi possível criar a empresa.');
-    await update(ref(db, `empresas/${empresaRef.key}/info`), { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid });
-    await update(ref(db, `users/${user.uid}`), { empresaId: empresaRef.key, role: 'admin', email: user.email || '' });
+    await update(ref(db), {
+      [`empresas/${empresaRef.key}/info`]: { nome: nomeNormalizado, criadoEm: new Date().toISOString(), criadoPor: user.uid },
+      [`users/${user.uid}`]: { empresaId: empresaRef.key, role: 'admin', email: user.email || '' }
+    });
   };
 
   const logout = async () => {
@@ -129,7 +137,10 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCategorias([]);
     setUsuarios([]);
     setPdvCliente('');
+    setPdvSearch('');
     setPdvDesconto(0);
+    setPdvPagamento('Pix');
+    setActiveTab('dashboard');
   };
 
   const saveRecord = async (collection: string, data: Record<string, any>, id?: string) => {
@@ -219,10 +230,6 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!empresaId) return;
     const basePath = `empresas/${empresaId}`;
-    const inicioMes = new Date();
-    inicioMes.setDate(1);
-    inicioMes.setHours(0, 0, 0, 0);
-    
     const collections = [
       { name: 'produtos', setter: setProdutos, queryRef: ref(db, `${basePath}/produtos`) },
       { name: 'clientes', setter: setClientes, queryRef: ref(db, `${basePath}/clientes`) },
@@ -232,7 +239,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       { name: 'usuarios', setter: setUsuarios, queryRef: ref(db, `${basePath}/usuarios`) },
       { name: 'orcamentos', setter: setOrcamentos, queryRef: ref(db, `${basePath}/orcamentos`) },
       { name: 'ordensServico', setter: setOrdensServico, queryRef: ref(db, `${basePath}/ordensServico`) },
-      { name: 'vendas', setter: setVendas, queryRef: query(ref(db, `${basePath}/vendas`), orderByChild('data'), startAt(inicioMes.toISOString())) },
+      { name: 'vendas', setter: setVendas, queryRef: ref(db, `${basePath}/vendas`) },
       { name: 'caixas', setter: setCaixas, queryRef: query(ref(db, `${basePath}/caixas`), limitToLast(100)) }
     ];
 
@@ -258,6 +265,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   // Funções do PDV
   const addToCart = (prod: Produto) => {
+    const estoqueDisponivel = Number(prod.qtd);
+    if (!prod.id || !Number.isFinite(estoqueDisponivel) || estoqueDisponivel <= 0) return;
     setCarrinho(prev => {
       const idx = prev.findIndex(c => c.id === prod.id);
       if (idx > -1) {
@@ -298,10 +307,41 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const excluirProduto = (id: string) => deleteRecord('produtos', id);
   const salvarCliente = (data: Partial<Cliente>, id?: string) => saveRecord('clientes', data, id);
   const excluirCliente = (id: string) => deleteRecord('clientes', id);
-  const salvarCadastro = (collection: string, data: Record<string, any>, id?: string) => saveRecord(collection, data, id);
+  const salvarCadastro = async (collection: string, data: Record<string, any>, id?: string) => {
+    if (collection !== 'usuarios' || id) {
+      await saveRecord(collection, data, id);
+      return;
+    }
+    const empresa = requireEmpresa();
+    if (userRole !== 'admin') throw new Error('Somente administradores podem criar usuários.');
+    const email = String(data.email || '').trim().toLowerCase();
+    if (!email) throw new Error('Informe o e-mail do usuário.');
+    let criado: User | null = null;
+    try {
+      const credencial = await createUserWithEmailAndPassword(provisioningAuth, email, `${crypto.randomUUID()}Aa1!`);
+      criado = credencial.user;
+      await update(ref(provisioningDb, `users/${criado.uid}`), {
+        empresaId: empresa,
+        role: data.perfil || 'vendedor',
+        email,
+        nome: data.nome || '',
+        convidadoPor: user.uid
+      });
+      await sendPasswordResetEmail(provisioningAuth, email);
+      await saveRecord('usuarios', { ...data, email, authUid: criado.uid, status: 'convite_enviado', criadoEm: new Date().toISOString() });
+      await signOut(provisioningAuth);
+    } catch (error: any) {
+      if (criado) await criado.delete().catch(() => undefined);
+      await signOut(provisioningAuth).catch(() => undefined);
+      throw new Error(error?.code === 'auth/email-already-in-use' ? 'Este e-mail já possui uma conta.' : error?.message || 'Não foi possível criar o usuário.');
+    }
+  };
   const excluirCadastro = (collection: string, id: string) => deleteRecord(collection, id);
+  const excluirOrcamento = (id: string) => deleteRecord('orcamentos', id);
   const salvarOrdemServico = (data: Partial<OrdemServico>, id?: string) => saveRecord('ordensServico', data, id);
   const converterOrcamentoParaOs = async (orcamento: Orcamento) => {
+    if (orcamento.status !== 'pendente') throw new Error('Este orçamento já foi processado.');
+    if (ordensServico.some(ordem => ordem.orcamentoId === orcamento.id)) throw new Error('Este orçamento já possui uma ordem de serviço.');
     await salvarOrdemServico({
       clienteId: orcamento.cliId,
       orcamentoId: orcamento.id,
@@ -333,6 +373,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     let desc = Math.max(0, Number(pdvDesconto) || 0);
     desc = Math.min(desc, subtotal);
     
+    const estoqueReservado: CarrinhoItem[] = [];
     try {
       if (comoOrcamento) {
          if(!pdvCliente) return alert("Selecione um cliente para salvar o orçamento!");
@@ -358,6 +399,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
             if (!resultado.committed || estoqueDepois !== estoqueAntes - c.qtd) {
              throw new Error(`Não foi possível reservar o estoque de ${c.marca} ${c.modelo}.`);
             }
+            estoqueReservado.push(c);
             return resultado;
         });
 
@@ -372,7 +414,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       }
       setCarrinho([]); setPdvDesconto(0); setPdvCliente('');
       alert(comoOrcamento ? "Orçamento salvo!" : "Venda concluída com sucesso!");
-    } catch (e: any) { alert("Erro ao finalizar: " + e.message); }
+    } catch (e: any) {
+      if (!comoOrcamento && estoqueReservado.length > 0) {
+        await Promise.all(estoqueReservado.map(item => runTransaction(ref(db, `empresas/${empresaId}/produtos/${item.id}/qtd`), quantidadeAtual => Number(quantidadeAtual || 0) + item.qtd)));
+      }
+      alert("Erro ao finalizar: " + e.message);
+    }
   };
 
   const value = {
@@ -380,7 +427,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     produtos, clientes, vendas, caixas, orcamentos, ordensServico, carrinho,
     fornecedores, contas, categorias, usuarios,
     activeTab, setActiveTab, pdvSearch, setPdvSearch, abrirCaixa, fecharCaixa,
-    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, salvarOrdemServico, converterOrcamentoParaOs, registrarLancamentoCaixa,
+    salvarProduto, excluirProduto, salvarCliente, excluirCliente, salvarCadastro, excluirCadastro, excluirOrcamento, salvarOrdemServico, converterOrcamentoParaOs, registrarLancamentoCaixa,
     addToCart, removeFromCart, finalizarVenda,
     caixaAberto, totalVendasCaixa, pdvCliente, setPdvCliente, pdvDesconto, setPdvDesconto, pdvPagamento, setPdvPagamento
   };

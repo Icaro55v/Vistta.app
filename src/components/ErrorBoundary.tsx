@@ -34,7 +34,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
           <h1 className="mb-3 text-xl font-bold text-slate-900">Ocorreu um erro inesperado</h1>
           <p className="mb-6 text-sm text-slate-500">A tela foi protegida para evitar uma falha silenciosa. Recarregue e tente novamente.</p>
           <p className="mb-6 break-words rounded-xl bg-rose-50 p-3 text-left text-xs text-rose-700">{this.state.message}</p>
-          <button onClick={this.reload} className="rounded-xl bg-[#4A3AFF] px-5 py-3 font-bold text-white">Recarregar aplicação</button>
+          <button onClick={this.reload} className="rounded-xl bg-[var(--vistta-plum)] px-5 py-3 font-bold text-white hover:bg-[var(--vistta-violet)]">Recarregar aplicação</button>
         </div>
       </div>
     );

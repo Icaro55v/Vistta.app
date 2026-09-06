@@ -103,7 +103,7 @@ export function AuthScreen() {
   return (
     <div className="flex min-h-[100dvh] w-full bg-[#fbfaf8] dark:bg-[#171124] text-slate-900 dark:text-white font-sans overflow-hidden">
       {/* Painel Esquerdo (VISTTA) */}
-      <div className="hidden lg:flex w-[55%] min-w-0 flex-col items-center justify-start bg-[#110d2b] p-8 pt-12 xl:p-12 xl:pt-20 text-white relative overflow-hidden">
+      <div className="hidden lg:flex w-[55%] min-w-0 flex-col items-center justify-start bg-[#110d2b] p-8 pt-12 xl:p-12 xl:pt-20 text-white relative overflow-y-auto custom-scrollbar">
         <div className="absolute inset-0 opacity-35" style={{ backgroundImage: 'radial-gradient(circle at 20% 15%, rgba(109,74,255,.34), transparent 34%), radial-gradient(circle at 80% 80%, rgba(61,29,132,.3), transparent 38%), linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px)', backgroundSize: '100% 100%, 100% 100%, 40px 40px, 40px 40px' }} />
         <div className="absolute -right-20 top-1/4 h-80 w-80 rounded-full border border-white/10"></div>
         <div className="absolute right-8 top-1/3 h-48 w-48 rounded-full border border-[#9c4cff]/25"></div>
@@ -146,7 +146,7 @@ export function AuthScreen() {
             </div>
           </div>
         </div>
-         <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="absolute bottom-8 left-8 z-10 flex items-center gap-4 rounded-2xl border border-[#9c4cff]/25 bg-white/[0.06] px-5 py-4 transition-colors hover:border-[#9c4cff]/45 hover:bg-white/[0.1] sm:left-12">
+         <a href="https://www.instagram.com/aaxxis7?stkn=MWsxMXo2cWRsdDN6cw==" target="_blank" rel="noreferrer" aria-label="Visitar o Instagram da AXXIS7, empresa desenvolvedora da VISTTA" className="relative z-10 mt-6 mb-2 flex self-start items-center gap-4 rounded-2xl border border-[#9c4cff]/25 bg-white/[0.06] px-5 py-4 transition-colors hover:border-[#9c4cff]/45 hover:bg-white/[0.1]">
            <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#080a12] p-1.5"><CreatorLogo className="h-full w-full" solidWhite={false} /></span>
            <span className="flex min-w-0 flex-col justify-center text-left"><small className="mb-0.5 block text-[8px] font-semibold uppercase tracking-[.2em] text-[#c6b0ff]">DESENVOLVIDO POR</small><strong className="block text-sm font-bold tracking-[.16em] text-white">AXXIS7</strong><small className="mt-0.5 block text-[10px] leading-tight text-white/55">empresa desenvolvedora da VISTTA</small></span>
          </a>

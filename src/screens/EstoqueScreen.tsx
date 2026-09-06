@@ -24,7 +24,7 @@ export function EstoqueScreen() {
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Estoque</h1>
           <p className="text-slate-500">Gerencie produtos e níveis de inventário.</p>
         </div>
-        <button onClick={() => { setProdutoEditando(null); setModalAberto(true); }} className="flex w-full items-center justify-center rounded-xl bg-[#4A3AFF] px-6 py-3 font-semibold text-white sm:w-auto">
+        <button onClick={() => { setProdutoEditando(null); setModalAberto(true); }} className="flex w-full items-center justify-center rounded-xl bg-[var(--vistta-plum)] px-6 py-3 font-semibold text-white hover:bg-[var(--vistta-violet)] sm:w-auto">
           <Plus size={20} className="mr-2" /> Adicionar Produto
         </button>
       </div>
@@ -35,7 +35,7 @@ export function EstoqueScreen() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <input 
               type="text" placeholder="Buscar código, marca..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-3 outline-none focus:border-[#4A3AFF]"
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-12 pr-4 py-3 outline-none focus:border-[var(--vistta-violet)]"
             />
           </div>
         </div>
@@ -65,7 +65,7 @@ export function EstoqueScreen() {
                     <span className={`inline-flex items-center justify-center w-10 h-10 rounded-xl text-[14px] font-bold ${Number(p.qtd) < Number(p.min) ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-700'}`}>{p.qtd}</span>
                   </td>
                   <td className="py-4 px-6 text-center">
-                    <button onClick={() => { setProdutoEditando(p); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[#4A3AFF] hover:bg-indigo-50"><Edit2 size={16} /></button>
+                    <button onClick={() => { setProdutoEditando(p); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[var(--vistta-violet)] hover:bg-[var(--vistta-lavender)]"><Edit2 size={16} /></button>
                     <button onClick={() => excluirProduto(p.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                   </td>
                 </tr>

@@ -8,7 +8,7 @@ export function FormProduto({ data, onSave, onClose, fornecedores = [] }: any) {
   const [submitError, setSubmitError] = useState('');
 
   const h = (f: string, v: any) => setForm((p: any) => ({ ...p, [f]: v }));
-  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-[#4A3AFF] transition-all text-slate-900 dark:text-white";
+  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3.5 text-[15px] outline-none focus:border-[var(--vistta-violet)] transition-all text-slate-900 dark:text-white";
   const labelClass = "text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-2 block";
 
   const submit = async (e: React.FormEvent) => {
@@ -45,7 +45,7 @@ export function FormProduto({ data, onSave, onClose, fornecedores = [] }: any) {
       {submitError && <p className="mb-4 rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-600">{submitError}</p>}
       <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3 sm:gap-4">
         <button type="button" onClick={onClose} className="px-6 py-3.5 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
-        <button type="submit" className="px-8 py-3.5 rounded-xl font-bold bg-[#4A3AFF] text-white">Salvar Produto</button>
+        <button type="submit" className="px-8 py-3.5 rounded-xl font-bold bg-[var(--vistta-plum)] text-white hover:bg-[var(--vistta-violet)]">Salvar Produto</button>
       </div>
     </form>
   );

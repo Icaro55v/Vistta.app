@@ -75,7 +75,7 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 capitalize">{activeTab}</h1>
           <p className="text-slate-500">Gestão completa liberada.</p>
         </div>
-        <button onClick={() => { setItemEditando(null); setModalAberto(true); }} className="flex w-full items-center justify-center rounded-xl bg-[#4A3AFF] px-6 py-3 font-semibold text-white sm:w-auto">
+        <button onClick={() => { setItemEditando(null); setModalAberto(true); }} className="flex w-full items-center justify-center rounded-xl bg-[var(--vistta-plum)] px-6 py-3 font-semibold text-white hover:bg-[var(--vistta-violet)] sm:w-auto">
           <Plus size={20} className="mr-2" /> Adicionar
         </button>
       </div>
@@ -102,7 +102,7 @@ export function CadastrosGenericosScreen({ activeTab }: { activeTab: string }) {
                     </td>
                     <td className="py-4 px-6 text-center">
                     <div className="flex justify-center gap-2">
-                        <button onClick={() => { setItemEditando(item); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[#4A3AFF] hover:bg-indigo-50"><Edit2 size={16} /></button>
+                        <button onClick={() => { setItemEditando(item); setModalAberto(true); }} className="p-2 rounded-xl text-slate-400 hover:text-[var(--vistta-violet)] hover:bg-[var(--vistta-lavender)]"><Edit2 size={16} /></button>
                         <button onClick={() => excluirCadastro(collection, item.id).catch((error: any) => alert(error.message))} className="p-2 rounded-xl text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Trash2 size={16} /></button>
                     </div>
                     </td>

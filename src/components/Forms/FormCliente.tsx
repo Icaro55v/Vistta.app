@@ -27,7 +27,7 @@ export function FormCliente({ data, onSave, onClose }: FormClienteProps) {
   const handleNested = (section: string, field: string, value: any) => setForm((prev: any) => ({ ...prev, [section]: { ...prev[section], [field]: value } }));
   const handlePresc = (group: 'longe' | 'perto', eye: 'od'|'oe', field: string, value: any) => setForm((prev: any) => ({ ...prev, prescricao: { ...prev.prescricao, [group]: { ...prev.prescricao[group], [eye]: { ...prev.prescricao[group][eye], [field]: value } } } }));
 
-  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-[14px] outline-none focus:border-[#4A3AFF]";
+  const inputClass = "w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-[14px] outline-none focus:border-[var(--vistta-violet)]";
   const labelClass = "text-[12px] font-bold text-slate-500 uppercase mb-2 block";
 
   const submit = async (e: React.FormEvent) => {
@@ -71,7 +71,7 @@ export function FormCliente({ data, onSave, onClose }: FormClienteProps) {
       {submitError && <p className="mt-4 rounded-xl bg-rose-50 p-3 text-sm font-semibold text-rose-600">{submitError}</p>}
       <div className="mt-8 border-t flex justify-end gap-3 pt-4">
         <button type="button" onClick={onClose} className="px-6 py-3 rounded-xl font-bold bg-slate-100 text-slate-600">Cancelar</button>
-        <button type="submit" className="px-8 py-3 rounded-xl font-bold bg-[#4A3AFF] text-white">Salvar Ficha</button>
+        <button type="submit" className="px-8 py-3 rounded-xl font-bold bg-[var(--vistta-plum)] text-white hover:bg-[var(--vistta-violet)]">Salvar Ficha</button>
       </div>
     </form>
   );

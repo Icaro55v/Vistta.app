@@ -117,7 +117,7 @@ function MainLayout() {
 }
 
 function MobileNav({ icon: Icon, label, active, onClick, badge = 0 }: any) {
-  return <button onClick={onClick} className={`flex-1 h-full flex flex-col items-center justify-center gap-1 text-[10px] relative ${active ? 'text-[#4A3AFF] font-bold' : 'text-slate-400'}`}>
+  return <button onClick={onClick} className={`flex-1 h-full flex flex-col items-center justify-center gap-1 text-[10px] relative ${active ? 'text-[var(--vistta-violet)] font-bold' : 'text-slate-400'}`}>
     <Icon size={22} />
     {badge > 0 && <span className="absolute top-1 right-3 bg-rose-500 text-white text-[10px] rounded-full px-1.5">{badge}</span>}
     <span>{label}</span>
