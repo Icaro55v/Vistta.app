@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithRedirect, getRedirectResult, GoogleAuthProvider, User } from 'firebase/auth';
 import { ref, update, get } from 'firebase/database';
 import { auth, db } from '../config/firebase';
 import { AlertTriangle, Mail, Lock, EyeOff, Eye, Store, Package, BarChart3, ShieldCheck, Instagram, Linkedin, ArrowUpRight, CheckCircle2 } from 'lucide-react';
@@ -78,19 +78,9 @@ export function AuthScreen() {
     setIsLoggingIn(true);
     const provider = new GoogleAuthProvider();
     try {
-      const result = await signInWithPopup(auth, provider);
-      await createGoogleProfile(result.user);
+      await signInWithRedirect(auth, provider);
     } catch (error: any) {
-      if (error?.code === 'auth/popup-blocked' || error?.code === 'auth/cancelled-popup-request') {
-        try {
-          await signInWithRedirect(auth, provider);
-          return;
-        } catch (redirectError: any) {
-          setAuthError(getGoogleErrorMessage(redirectError));
-        }
-      } else {
-        setAuthError(getGoogleErrorMessage(error));
-      }
+      setAuthError(getGoogleErrorMessage(error));
     } finally {
       setIsLoggingIn(false);
     }
